@@ -1,0 +1,112 @@
+# campaigns/basic_validation.yaml
+#
+# Xaloqi TestLab — Basic ECU Validation Campaign
+#
+# Compatible with:
+#   xaloqi-testlab: python3 tools/runner.py --campaign campaigns/basic_validation.yaml
+#   xaloqi-eds:     python3 tools/jobrunner.py  (same YAML schema)
+#
+# USAGE:
+#   # Against Docker Compose ECU simulator
+#   python3 tools/runner.py \
+#     --config  docker/ecu_sim/diagnostics_config.yaml \
+#     --campaign campaigns/basic_validation.yaml \
+#     --job     basic_validation \
+#     --interface vcan0 \
+#     --json    reports/basic_$(date +%Y%m%d_%H%M%S).json
+#
+#   # Against VirtualBus (no hardware, CI-safe)
+#   python3 tools/runner.py \
+#     --config  docker/ecu_sim/diagnostics_config.yaml \
+#     --campaign campaigns/basic_validation.yaml \
+#     --job     basic_validation \
+#     --virtual \
+#     --json    reports/ci_run.json
+
+jobs:
+
+  basic_validation:
+    description: >
+      Basic ECU validation — session control, security access, DID read,
+      DTC management. Runs in extended session with security unlock.
+    timeout_ms:  30000
+    on_failure:  abort
+
+    steps:
+      - action: session
+        value:  extended
+
+      - action: security_access
+        level:  1
+
+      - action: read_did
+        did:    "0xF190"
+        save_as: vin
+
+      - action: read_did
+        did:    "0xF18C"
+
+      - action: read_dtc
+
+      - action: clear_dtc
+        group:  "0xFFFFFF"
+
+      - action: read_dtc
+
+      - action: session
+        value:  default
+
+
+  eol_production_check:
+    description: >
+      End-of-line production check — read all DIDs in extended session,
+      clear DTCs, verify no active faults remain. Use --json to capture
+      structured results for traceability records.
+    timeout_ms:  30000
+    on_failure:  continue
+
+    steps:
+      - action: session
+        value:  extended
+
+      - action: security_access
+        level:  1
+
+      - action: foreach_did
+        min_session:  extended
+        expect_ok:    false
+        save_results: true
+
+      - action: clear_dtc
+        group:  "0xFFFFFF"
+
+      - action: read_dtc
+        save_as: active_dtcs
+
+      - action: session
+        value:  default
+
+
+  security_audit:
+    description: >
+      Security audit — verify locked DIDs are inaccessible without
+      security access, then verify they become accessible after unlock.
+    timeout_ms:  20000
+    on_failure:  abort
+
+    steps:
+      - action:     read_did
+        did:        "0xF187"
+        expect_ok:  false    # should fail without security access
+
+      - action: session
+        value:  extended
+
+      - action: security_access
+        level:  1
+
+      - action: read_did
+        did:    "0xF187"     # should succeed after unlock
+
+      - action: session
+        value:  default

@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    name: "Test (Python ${{ matrix.python-version }})"
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    env:
+      XALOQI_LICENSE_SKIP: "1"
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Test
+        run: pytest tests/ -v --tb=short
+
+      - name: Zero-install demo smoke test
+        run: |
+          xaloqi-sim --demo
+
+      - name: Free campaign smoke test
+        run: |
+          testlab-run --config testlab_config.yaml \
+            --campaign campaigns/standalone_validation.yaml \
+            --job basic_validation --virtual --json /tmp/ci_run.json
+          testlab analyze --results /tmp/ci_run.json

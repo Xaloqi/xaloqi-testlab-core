@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "runner_version": "1.5.0",
+  "config_path": "core/examples/diagnostics_config.yaml",
+  "generated_at": "2026-05-06T10:00:00+00:00",
+  "runs": [
+    {
+      "schema_version": 1,
+      "job_name": "field_diagnostic_read",
+      "config_path": "core/examples/diagnostics_config.yaml",
+      "ecu_name": "TestLab-Sim",
+      "ecu_version": "1.0",
+      "started_at": "2026-05-06T11:03:27.017803+00:00",
+      "finished_at": "2026-05-06T11:03:27.018599+00:00",
+      "duration_ms": 0.62,
+      "success": false,
+      "steps": [
+        {
+          "index": 1,
+          "action": "session",
+          "params": {
+            "value": "extended"
+          },
+          "success": true,
+          "duration_ms": 0.12740599999006008,
+          "request_pdu": null,
+          "response_pdu": "5003001901F4",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 2,
+          "action": "read_did",
+          "params": {
+            "did": "0xF190",
+            "expect_ok": true
+          },
+          "success": true,
+          "duration_ms": 0.08282999999664753,
+          "request_pdu": "22F190",
+          "response_pdu": "62F190314847424834314A584D4E313039313836",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 3,
+          "action": "read_did",
+          "params": {
+            "did": "0xF187",
+            "expect_ok": true
+          },
+          "success": false,
+          "duration_ms": 0.05002899999340116,
+          "request_pdu": "22F187",
+          "response_pdu": null,
+          "nrc": 51,
+          "nrc_name": "securityAccessDenied",
+          "error": "NRC 0x33 (securityAccessDenied) for SID 0x22"
+        },
+        {
+          "index": 4,
+          "action": "read_did",
+          "params": {
+            "did": "0xF18C",
+            "expect_ok": true
+          },
+          "success": true,
+          "duration_ms": 0.07188999998675172,
+          "request_pdu": "22F18C",
+          "response_pdu": "62F18C53494D3030303030303031",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 5,
+          "action": "read_did",
+          "params": {
+            "did": "0xDEAD",
+            "expect_ok": true
+          },
+          "success": false,
+          "duration_ms": 0.046349999990979995,
+          "request_pdu": "22DEAD",
+          "response_pdu": null,
+          "nrc": 49,
+          "nrc_name": "requestOutOfRange",
+          "error": "NRC 0x31 (requestOutOfRange) for SID 0x22"
+        },
+        {
+          "index": 6,
+          "action": "read_dtc",
+          "params": {
+            "dtc_count": 0
+          },
+          "success": true,
+          "duration_ms": 0.06663399997819397,
+          "request_pdu": null,
+          "response_pdu": "5902FF",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        }
+      ],
+      "variables": {},
+      "summary": "4/6 steps passed"
+    }
+  ]
+}

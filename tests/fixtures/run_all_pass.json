@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "runner_version": "1.5.0",
+  "config_path": "core/examples/diagnostics_config.yaml",
+  "generated_at": "2026-05-06T09:00:00+00:00",
+  "runs": [
+    {
+      "schema_version": 1,
+      "job_name": "eol_production_check",
+      "config_path": "core/examples/diagnostics_config.yaml",
+      "ecu_name": "TestLab-Sim",
+      "ecu_version": "1.0",
+      "started_at": "2026-05-06T11:03:27.013274+00:00",
+      "finished_at": "2026-05-06T11:03:27.017443+00:00",
+      "duration_ms": 3.87,
+      "success": true,
+      "steps": [
+        {
+          "index": 1,
+          "action": "session",
+          "params": {
+            "value": "extended"
+          },
+          "success": true,
+          "duration_ms": 0.23367300002519187,
+          "request_pdu": null,
+          "response_pdu": "5003001901F4",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 2,
+          "action": "security_access",
+          "params": {
+            "level": 1
+          },
+          "success": true,
+          "duration_ms": 2.316859000018212,
+          "request_pdu": null,
+          "response_pdu": "6702",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 3,
+          "action": "read_did",
+          "params": {
+            "did": "0xF190",
+            "expect_ok": true
+          },
+          "success": true,
+          "duration_ms": 0.22903699999687888,
+          "request_pdu": "22F190",
+          "response_pdu": "62F190314847424834314A584D4E313039313836",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 4,
+          "action": "read_did",
+          "params": {
+            "did": "0xF18C",
+            "expect_ok": true
+          },
+          "success": true,
+          "duration_ms": 0.14382800000589668,
+          "request_pdu": "22F18C",
+          "response_pdu": "62F18C53494D3030303030303031",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 5,
+          "action": "foreach_did",
+          "params": {
+            "min_session": "extended",
+            "did_count": 4,
+            "passed": 4,
+            "failed": 0
+          },
+          "success": true,
+          "duration_ms": 0.3530749999924865,
+          "request_pdu": null,
+          "response_pdu": null,
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 6,
+          "action": "read_dtc",
+          "params": {
+            "dtc_count": 0
+          },
+          "success": true,
+          "duration_ms": 0.06869200001347053,
+          "request_pdu": null,
+          "response_pdu": "5902FF",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        },
+        {
+          "index": 7,
+          "action": "ecu_reset",
+          "params": {
+            "reset_type": "soft",
+            "wait_ms": 0
+          },
+          "success": true,
+          "duration_ms": 0.07346199998892189,
+          "request_pdu": null,
+          "response_pdu": "5103",
+          "nrc": null,
+          "nrc_name": null,
+          "error": null
+        }
+      ],
+      "variables": {
+        "did_F190": "314847424834314a584d4e313039313836",
+        "did_F18C": "53494d3030303030303031",
+        "did_F187": "58414c4f51492d53494d2d312e302020",
+        "did_2001": "0e74"
+      },
+      "summary": "7/7 steps passed"
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+# campaigns/standalone_validation.yaml
+#
+# Xaloqi TestLab — Standalone ECU Validation Campaign
+#
+# For use with testlab_config.yaml (no Xaloqi EDS required).
+# Works against any UDS-compliant ECU.
+#
+# USAGE:
+#   # Against real hardware
+#   testlab-run \
+#     --config  testlab_config.yaml \
+#     --campaign campaigns/standalone_validation.yaml \
+#     --job     basic_validation \
+#     --interface vcan0 \
+#     --json    reports/run_$(date +%Y%m%d_%H%M%S).json
+#
+#   # Against built-in ECU simulator (no hardware)
+#   testlab-run \
+#     --config  docker/ecu_sim/diagnostics_config.yaml \
+#     --campaign campaigns/standalone_validation.yaml \
+#     --job     basic_validation \
+#     --virtual \
+#     --json    reports/ci_run.json
+#
+#   # Generate HTML report
+#   testlab report --results reports/run_*.json --out reports/latest.html
+#
+# See campaigns/basic_validation.yaml for the EDS-integrated variant.
+
+jobs:
+
+  # --------------------------------------------------------------------------
+  # basic_validation
+  # First test to run on a new or unknown ECU.
+  # No security access required. Safe on any UDS ECU.
+  # --------------------------------------------------------------------------
+  basic_validation:
+    description: >
+      Basic connectivity check — verify the ECU responds to TesterPresent,
+      open an extended session, read the VIN, scan for DTCs, return to default.
+      Run this first when connecting to an unfamiliar ECU.
+    timeout_ms: 15000
+    on_failure:  abort
+
+    steps:
+      - action: tester_present
+        suppress: false           # verify ECU is alive and responds
+
+      - action: session
+        value:  extended          # open extended diagnostic session
+
+      - action: read_did
+        did:    "0xF190"          # VIN — readable in default/extended session
+        save_as: vin
+
+      - action: read_dtc          # scan for active fault codes
+
+      - action: session
+        value:  default           # return to default session cleanly
+
+
+  # --------------------------------------------------------------------------
+  # eol_production_check
+  # End-of-line production check: unlock, read all DIDs, clear faults.
+  # Requires security access level 1.
+  # --------------------------------------------------------------------------
+  eol_production_check:
+    description: >
+      End-of-line production check — security unlock, read all defined DIDs,
+      clear any DTCs, verify no faults remain. Use on_failure: continue so
+      all steps run even if some DIDs are not supported by this ECU variant.
+    timeout_ms: 30000
+    on_failure:  continue
+
+    steps:
+      - action: session
+        value:  extended
+
+      - action: security_access
+        level:  1
+
+      - action: foreach_did        # read all DIDs from testlab_config.yaml
+        min_session:  extended
+        expect_ok:    false        # don't fail if some DIDs return NRC
+        save_results: true
+
+      - action: clear_dtc
+        group:  "0xFFFFFF"         # clear all DTCs
+
+      - action: read_dtc           # verify no active faults remain
+        save_as: active_dtcs
+
+      - action: session
+        value:  default
+
+
+  # --------------------------------------------------------------------------
+  # security_audit
+  # Verify access controls are enforced correctly.
+  # --------------------------------------------------------------------------
+  security_audit:
+    description: >
+      Security audit — verify that security-protected DIDs are correctly
+      locked before unlock and correctly accessible after unlock.
+      Fails if a protected DID is readable without security access.
+    timeout_ms: 20000
+    on_failure:  abort
+
+    steps:
+      - action: session
+        value:  extended
+
+      - action: read_did
+        did:       "0xF187"        # part number — requires security level 1
+        expect_ok: false           # MUST return NRC 0x33 here (not unlocked yet)
+
+      - action: security_access
+        level:  1
+
+      - action: read_did
+        did:    "0xF187"           # now must succeed
+        save_as: part_number
+
+      - action: session
+        value:  default
+
+
+  # --------------------------------------------------------------------------
+  # regression_check
+  # Quick smoke test for CI — subset of eol_production_check.
+  # Designed to run fast (<10s) in a pipeline.
+  # --------------------------------------------------------------------------
+  regression_check:
+    description: >
+      CI regression check — fast subset suitable for every commit.
+      Reads VIN, checks for DTCs. No security access required.
+    timeout_ms: 10000
+    on_failure:  abort
+
+    steps:
+      - action: tester_present
+        suppress: false
+
+      - action: read_did
+        did:    "0xF190"
+
+      - action: read_dtc
