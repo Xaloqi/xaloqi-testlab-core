@@ -19,7 +19,7 @@ USAGE:
 
 JSON INPUT: schema_version 1 — produced by testlab-run --json.
 
-VERSION: 1.5.0
+VERSION: 1.5.1
 =============================================================================
 """
 
