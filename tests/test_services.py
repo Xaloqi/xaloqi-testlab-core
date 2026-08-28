@@ -243,6 +243,29 @@ async def test_security_access_nrc_invalid_key():
     )
 
 
+@pytest.mark.asyncio
+async def test_security_access_over_virtualbus_does_not_warn():
+    """O-12: security_access against VirtualBus is expected simulator use —
+    no UserWarning about the placeholder key (it IS the right key here)."""
+    import warnings
+    from xaloqi.tester._security import derive_key
+    seed = bytes([0x47, 0xAB, 0x09, 0xBB])
+    expected_key = derive_key(seed, 1, quiet=True)
+    seed_resp = bytes([0x67, 0x01]) + seed + bytes([0x00, 0x00])
+    key_req = bytes([0x27, 0x02]) + expected_key
+
+    async def fn(ecu):
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")  # any warning here fails the test
+            resp = await ecu.security_access(level=1)
+        assert resp.raw[0] == 0x67
+
+    await run_with_ecu(
+        {(0x27, 0x01): tuple(seed_resp), tuple(key_req): (0x67, 0x02)},
+        fn
+    )
+
+
 # ---------------------------------------------------------------------------
 # TesterPresent (0x3E)
 # ---------------------------------------------------------------------------
@@ -261,3 +284,57 @@ async def test_tester_present_suppress():
         resp = await ecu.tester_present(suppress_response=True)
         assert resp.raw == b""
     await run_with_ecu({}, fn)
+
+
+# ---------------------------------------------------------------------------
+# O-12 regression guard: the placeholder-key warning must still fire for a
+# transport that ISN'T the simulator, even one built on top of VirtualBus
+# plumbing — only `isinstance(bus, VirtualBus)` is quiet, nothing broader.
+# ---------------------------------------------------------------------------
+
+class _NonVirtualProxyBus:
+    """Wraps a VirtualBus without being one, standing in for a real
+    transport (SocketCAN/DoIP/etc., which live in xaloqi-tester-pro and
+    aren't available to core's test suite)."""
+
+    def __init__(self, inner: VirtualBus):
+        self._inner = inner
+
+    async def send(self, arbitration_id: int, data: bytes) -> None:
+        await self._inner.send(arbitration_id, data)
+
+    async def recv(self, timeout: float):
+        return await self._inner.recv(timeout)
+
+    async def close(self) -> None:
+        await self._inner.close()
+
+
+@pytest.mark.asyncio
+async def test_security_access_over_non_virtualbus_still_warns():
+    from xaloqi.tester._security import derive_key
+    seed = bytes([0x47, 0xAB, 0x09, 0xBB])
+    expected_key = derive_key(seed, 1, quiet=True)
+    seed_resp = bytes([0x67, 0x01]) + seed + bytes([0x00, 0x00])
+    key_req = bytes([0x27, 0x02]) + expected_key
+
+    tester_bus, ecu_bus = VirtualBus.pair("svc_test_nonvirtual")
+    proxy_bus = _NonVirtualProxyBus(tester_bus)
+    stop = asyncio.Event()
+    task = asyncio.create_task(ecu_sim(
+        ecu_bus,
+        {(0x27, 0x01): tuple(seed_resp), tuple(key_req): (0x67, 0x02)},
+        stop,
+    ))
+    try:
+        async with UdsTester(proxy_bus, rx_id=0x7E8, tx_id=0x7DF, keepalive=False) as ecu:
+            with pytest.warns(UserWarning, match="placeholder key"):
+                resp = await ecu.security_access(level=1)
+            assert resp.raw[0] == 0x67
+    finally:
+        stop.set()
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass

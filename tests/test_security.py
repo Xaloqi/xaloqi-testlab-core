@@ -180,3 +180,28 @@ def test_derive_key_matches_cmac():
     result = derive_key(SEED_BYTES, 1)
     mac = aes_cmac(_LEVEL1_KEY, SEED_BYTES)
     assert result == mac[:4]
+
+
+# ---------------------------------------------------------------------------
+# quiet= (O-12): placeholder-key UserWarning is correct behaviour against
+# real hardware, wrong presentation in the simulator context — suppress it
+# there instead of raising it and stripping the presentation everywhere.
+# ---------------------------------------------------------------------------
+
+def test_derive_key_warns_by_default_on_placeholder_key():
+    """Default (quiet=False) behaviour is unchanged — still warns."""
+    with pytest.warns(UserWarning, match="placeholder key"):
+        derive_key(SEED_BYTES, 1)
+
+
+def test_derive_key_quiet_suppresses_placeholder_warning():
+    """quiet=True (the simulator's own call sites) raises no warning."""
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # any warning here fails the test
+        derive_key(SEED_BYTES, 1, quiet=True)
+
+
+def test_derive_key_quiet_result_unchanged():
+    """quiet only silences the warning — the derived key is identical."""
+    assert derive_key(SEED_BYTES, 1, quiet=True) == derive_key(SEED_BYTES, 1) == EXPECTED_KEY

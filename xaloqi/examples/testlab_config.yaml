@@ -1,0 +1,135 @@
+# testlab_config.yaml
+#
+# Xaloqi TestLab — Standalone ECU configuration
+#
+# Use this file if you are NOT using Xaloqi EDS.
+# If you already have a diagnostics_config.yaml from EDS, use that directly —
+# UdsTester.from_config() and testlab-run accept both formats automatically.
+#
+# QUICK START:
+#   1. Copy this file and rename it for your ECU (e.g. my_ecu.yaml)
+#   2. Set interface, rx_id, tx_id for your CAN setup
+#   3. Add your DIDs and DTCs
+#   4. Run: testlab-run --config my_ecu.yaml --campaign campaigns/standalone_validation.yaml \
+#               --job basic_validation --interface vcan0
+#
+# PYTHON API:
+#   async with UdsTester.from_config("my_ecu.yaml") as ecu:
+#       vin = await ecu.read_did(0xF190)
+#
+# All fields marked REQUIRED must be present.
+# All fields marked OPTIONAL can be omitted — defaults are shown.
+
+# ---------------------------------------------------------------------------
+# CAN interface  (REQUIRED)
+# ---------------------------------------------------------------------------
+
+# Linux SocketCAN interface name.
+#   vcan0          Built-in TestLab ECU simulator (docker compose up)
+#   can0 / can1    Real hardware (USB-CAN, PEAK PCAN, Kvaser, etc.)
+interface: vcan0
+
+# rx_id: the CAN ID your ECU sends responses ON  (tester listens here)
+# tx_id: the CAN ID your ECU listens ON           (tester sends here)
+#
+# Standard OBD-II functional addressing:
+#   rx_id: 0x7E8  (ECU response ID)
+#   tx_id: 0x7DF  (functional request ID)
+#
+# Physical addressing example for ECU at node 0x01:
+#   rx_id: 0x7E9  (0x7E8 + node)
+#   tx_id: 0x7E1  (0x7E0 + node)
+#
+rx_id: "0x7E8"
+tx_id: "0x7DF"
+
+# ---------------------------------------------------------------------------
+# ECU identity  (OPTIONAL)
+# ---------------------------------------------------------------------------
+
+ecu_name: MyECU         # shown in campaign output and HTML reports
+
+# Response timeout in milliseconds.
+# 150ms is correct for most ECUs in diagnostic sessions.
+# Increase to 500+ for slow ECUs or programming sessions.
+p2_timeout_ms: 150
+
+# ---------------------------------------------------------------------------
+# Data Identifiers  (OPTIONAL)
+# ---------------------------------------------------------------------------
+#
+# Defining DIDs here enables:
+#   - read_dids([0xF190, 0xF18C]) with automatic data-length parsing
+#   - foreach_did in campaign YAMLs (reads all DIDs matching session/security)
+#   - DID names in HTML reports instead of raw hex codes
+#
+# If you skip this section, read_did(id) still works for single DIDs —
+# you just lose multi-DID batching, foreach_did, and named report display.
+#
+# Fields:
+#   id                    DID identifier (hex string or integer)  REQUIRED
+#   name                  Human-readable name for reports          OPTIONAL
+#   data_length           Expected response length in bytes        REQUIRED
+#   access                [read] or [read, write]                  OPTIONAL  default: [read]
+#   min_session           default | extended | programming         OPTIONAL  default: default
+#   read_security_level   0 = no security, 1+ = requires unlock   OPTIONAL  default: 0
+#   write_security_level  0 = no security, 1+ = requires unlock   OPTIONAL  default: 0
+
+dids:
+  # Standard ISO 15031-5 / SAE J1979 DIDs
+  - id: "0xF190"
+    name: VIN
+    data_length: 17
+    access: [read]
+    min_session: default
+    read_security_level: 0
+    write_security_level: 0
+
+  - id: "0xF18C"
+    name: ECUSerialNumber
+    data_length: 10
+    access: [read]
+    min_session: default
+    read_security_level: 0
+    write_security_level: 0
+
+  # Security-protected DID — requires extended session + security access level 1
+  - id: "0xF187"
+    name: VehicleManufacturerSparePartNumber
+    data_length: 16
+    access: [read, write]
+    min_session: extended
+    read_security_level: 1
+    write_security_level: 1
+
+  # Add your ECU-specific DIDs:
+  # - id: "0x1234"
+  #   name: MySignal
+  #   data_length: 4
+  #   access: [read]
+  #   min_session: default
+  #   read_security_level: 0
+  #   write_security_level: 0
+
+# ---------------------------------------------------------------------------
+# Diagnostic Trouble Codes  (OPTIONAL)
+# ---------------------------------------------------------------------------
+#
+# Defining DTCs adds descriptions to DTC records in HTML reports.
+# If omitted, DTCs are still read and cleared — they just show raw hex codes.
+#
+# severity: immediate | check_at_next_halt | information
+
+dtcs:
+  - code: "0xC00100"
+    description: CAN communication loss — sensor bus
+    severity: immediate
+
+  - code: "0xC00200"
+    description: Supply voltage out of range
+    severity: check_at_next_halt
+
+  # Add your ECU-specific DTCs:
+  # - code: "0xABCDEF"
+  #   description: My fault description
+  #   severity: information

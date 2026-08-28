@@ -7,7 +7,7 @@ name = "xaloqi-tester"
 version = "1.5.0"
 description = "Xaloqi TestLab core — UDS ECU validation campaign runner with a built-in simulated ECU. Apache-2.0."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Xaloqi" }]
 keywords = ["UDS", "ISO-14229", "ISO-TP", "ECU", "automotive", "diagnostics", "CAN", "simulator"]
@@ -45,6 +45,12 @@ xaloqi-sim  = "xaloqi.sim:main"
 [tool.setuptools.packages.find]
 where   = ["."]
 include = ["xaloqi*"]
+
+# Bundled example config + campaign (O-11): so `xaloqi-sim --demo`'s own
+# "Next:" instruction has a real file to point pip-installed users at,
+# not just a repo-relative path that doesn't exist post-install.
+[tool.setuptools.package-data]
+"xaloqi.examples" = ["*.yaml", "campaigns/*.yaml"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

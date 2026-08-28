@@ -238,13 +238,19 @@ def aes_cmac(key: bytes, message: bytes) -> bytes:
         return _cmac_pure_python(key, message)
 
 
-def derive_key(seed: bytes, level: int) -> bytes:
+def derive_key(seed: bytes, level: int, quiet: bool = False) -> bytes:
     """
     Derive SecurityAccess key from seed using AES-128-CMAC.
 
     Args:
         seed:  Seed bytes from ECU 0x67 response. Passed as-is to aes_cmac.
         level: Security level integer (1, 2, ...).
+        quiet: Skip the placeholder-key warning below. Pass True when the
+               caller already knows it's talking to the simulator (VirtualBus
+               or `xaloqi-sim` itself) — there the placeholder key is the
+               *correct* key, not a misconfiguration, so warning about it is
+               noise, not signal. Real-transport callers leave this False so
+               the warning still fires if production key env vars are unset.
 
     Returns:
         4-byte key to send in the 0x27 key request.
@@ -254,7 +260,7 @@ def derive_key(seed: bytes, level: int) -> bytes:
             f"Unknown security level {level}. "
             f"Supported: {list(_LEVEL_MASTER_KEYS.keys())}"
         )
-    if _LEVEL_MASTER_KEYS[level] == _SA_KEY_FALLBACK.get(level):
+    if not quiet and _LEVEL_MASTER_KEYS[level] == _SA_KEY_FALLBACK.get(level):
         _warnings.warn(
             f"SecurityAccess level {level}: using simulator placeholder key. "
             f"Set XALOQI_SA_KEY_LEVEL_{level}=<32-hex-chars> for production ECUs.",

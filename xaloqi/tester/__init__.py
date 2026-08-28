@@ -541,7 +541,10 @@ class UdsTester:
         """0x27 SecurityAccess — full seed/key exchange in one call."""
         seed_resp = await self.request_seed(level)
         seed = seed_resp.seed
-        key = derive_key(seed, level)
+        # Talking to VirtualBus means talking to xaloqi.sim — the placeholder
+        # key is correct there by construction, so the "production ECU"
+        # warning in derive_key() would be noise, not signal (O-12).
+        key = derive_key(seed, level, quiet=isinstance(self._bus, VirtualBus))
         return await self.send_key(level, key)
 
     async def request_seed(self, level: int) -> SecuritySeedResponse:

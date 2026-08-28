@@ -197,7 +197,9 @@ def handle_request(pdu: bytes, state: EcuState, verbose: bool) -> bytes | None:
             # Key response (even sub-function)
             level = sub // 2
             seed = bytes([0x47, 0xAB, 0x09, 0xBB])
-            expected = derive_key(seed, level)
+            # quiet=True: this *is* the simulator checking its own key —
+            # never a misconfigured-production-ECU situation (O-12).
+            expected = derive_key(seed, level, quiet=True)
             received = pdu[2:6] if len(pdu) >= 6 else b""
             if received != expected:
                 return bytes([0x7F, 0x27, 0x35])  # invalidKey
@@ -386,9 +388,32 @@ async def run_demo(verbose: bool = False) -> int:
     print("─" * 64)
     if ok:
         print("  All exchanges OK. Next: run a full YAML campaign against this ECU")
-        print("  with `testlab-run --virtual` — quickstart and example campaigns:")
-        print("    https://xaloqi.com/testlab/docs\n")
+        print("  with the example bundled in this install (no download needed):\n")
+        for line in _demo_next_command():
+            print(f"    {line}")
+        print("\n  More campaigns and quickstart docs: https://xaloqi.com/testlab/docs\n")
     return 0 if ok else 1
+
+
+def _demo_next_command() -> list[str]:
+    """The literal `testlab-run` invocation to print after a successful demo.
+
+    Resolves the config + campaign shipped in `xaloqi.examples` (installed
+    alongside this package — see that module's docstring) so the command is
+    copy-pasteable and actually works for a pip-installed user with no repo
+    checkout (O-11: the previous text pointed at `testlab-run --virtual`
+    alone, which fails with "--config or --workspace is required").
+    """
+    from importlib.resources import files as _resource_files
+
+    examples = _resource_files("xaloqi.examples")
+    config = examples.joinpath("testlab_config.yaml")
+    campaign = examples.joinpath("campaigns", "standalone_validation.yaml")
+    return [
+        f"testlab-run --config {config} \\",
+        f"            --campaign {campaign} \\",
+        "            --job basic_validation --virtual",
+    ]
 
 
 # ---------------------------------------------------------------------------
