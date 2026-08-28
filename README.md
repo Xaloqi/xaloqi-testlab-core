@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600)](https://pypi.org/project/xaloqi-tester/)
+[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.1)](https://pypi.org/project/xaloqi-tester/)
 
 Try a full UDS ECU with nothing but Python — no hardware, no CAN stack, no
 config file:
