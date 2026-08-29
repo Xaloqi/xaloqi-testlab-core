@@ -209,8 +209,12 @@ async def test_clear_dtcs():
 async def test_security_access():
     from xaloqi.tester._security import derive_key
     seed = bytes([0x47, 0xAB, 0x09, 0xBB])
-    expected_key = derive_key(seed, 1)
     seed_resp = bytes([0x67, 0x01]) + seed + bytes([0x00, 0x00])
+    # O-14: request_seed() takes the seed as resp[2:] (whatever length the
+    # ECU returned) — here that's the full 6 bytes after the SID/subFn, not
+    # just the first 4, so the expected key must be derived from those 6
+    # bytes to match what the tester will actually send back.
+    expected_key = derive_key(seed_resp[2:], 1)
     key_req = bytes([0x27, 0x02]) + expected_key
 
     async def fn(ecu):
@@ -227,8 +231,9 @@ async def test_security_access():
 async def test_security_access_nrc_invalid_key():
     from xaloqi.tester._security import derive_key
     seed = bytes([0x11, 0x22, 0x33, 0x44])
-    key = derive_key(seed, 1)
     seed_resp = bytes([0x67, 0x01]) + seed + bytes([0x00, 0x00])
+    # O-14: seed is resp[2:] (6 bytes here), not the old fixed resp[2:6].
+    key = derive_key(seed_resp[2:], 1)
     key_req = bytes([0x27, 0x02]) + key
 
     async def fn(ecu):
@@ -250,8 +255,9 @@ async def test_security_access_over_virtualbus_does_not_warn():
     import warnings
     from xaloqi.tester._security import derive_key
     seed = bytes([0x47, 0xAB, 0x09, 0xBB])
-    expected_key = derive_key(seed, 1, quiet=True)
     seed_resp = bytes([0x67, 0x01]) + seed + bytes([0x00, 0x00])
+    # O-14: seed is resp[2:] (6 bytes here), not the old fixed resp[2:6].
+    expected_key = derive_key(seed_resp[2:], 1, quiet=True)
     key_req = bytes([0x27, 0x02]) + expected_key
 
     async def fn(ecu):
@@ -314,8 +320,9 @@ class _NonVirtualProxyBus:
 async def test_security_access_over_non_virtualbus_still_warns():
     from xaloqi.tester._security import derive_key
     seed = bytes([0x47, 0xAB, 0x09, 0xBB])
-    expected_key = derive_key(seed, 1, quiet=True)
     seed_resp = bytes([0x67, 0x01]) + seed + bytes([0x00, 0x00])
+    # O-14: seed is resp[2:] (6 bytes here), not the old fixed resp[2:6].
+    expected_key = derive_key(seed_resp[2:], 1, quiet=True)
     key_req = bytes([0x27, 0x02]) + expected_key
 
     tester_bus, ecu_bus = VirtualBus.pair("svc_test_nonvirtual")

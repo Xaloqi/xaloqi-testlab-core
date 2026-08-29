@@ -113,7 +113,7 @@ except ImportError as _e:
 # Version
 # ---------------------------------------------------------------------------
 
-RUNNER_VERSION      = "1.5.1"
+RUNNER_VERSION      = "1.5.2"
 JSON_SCHEMA_VERSION = 1
 
 

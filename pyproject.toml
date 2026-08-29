@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "xaloqi-tester"
-version = "1.5.1"
+version = "1.5.2"
 description = "Xaloqi TestLab core — UDS ECU validation campaign runner with a built-in simulated ECU. Apache-2.0."
 readme = "README.md"
 requires-python = ">=3.11"

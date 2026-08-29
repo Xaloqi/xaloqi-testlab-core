@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.1)](https://pypi.org/project/xaloqi-tester/)
+[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.2)](https://pypi.org/project/xaloqi-tester/)
 
 Try a full UDS ECU with nothing but Python — no hardware, no CAN stack, no
 config file:
@@ -41,7 +41,10 @@ unmodified against real hardware once you add
 
 - **UDS client** (`xaloqi.tester.UdsTester`) — async and sync, all major UDS
   services including 0x27 SecurityAccess (AES-CMAC) and the
-  0x34/0x35/0x36/0x37 firmware up/download sequence.
+  0x34/0x35/0x36/0x37 firmware up/download sequence. ISO-TP multi-frame
+  sends honour the ECU's real Flow Control: BlockSize, STmin (both the
+  millisecond and the 100–900us encodings), WAIT with a bounded WFTmax,
+  and OVERFLOW.
 - **VirtualBus** — the in-process transport and the **simulated ECU**
   (`xaloqi.sim`, also the `xaloqi-sim` command).
 - **Campaign runner** (`testlab-run`) — 20 UDS actions, `expect_nrc`,
@@ -49,6 +52,15 @@ unmodified against real hardware once you add
   Xaloqi EDS diagnostics stack, so the same result format works with
   either).
 - **`testlab analyze`** — terminal summary of a run's JSON results.
+
+## Cross-implementation tested, not just self-tested
+
+`xaloqi-tester`'s `DoipBus` (this package, Python) is run in CI against the
+[Xaloqi EDS](https://github.com/Xaloqi/EDS) DoIP server (C, `native_sim`) on
+every EDS push — a real cross-implementation, cross-language DoIP conversation,
+not two halves of one codebase talking to themselves. See
+[EDS's CI workflow](https://github.com/Xaloqi/EDS/blob/main/.github/workflows/ci.yml)
+(job: `DoIP Integration (native_sim + DoipBus)`).
 
 ## What's in Pro
 

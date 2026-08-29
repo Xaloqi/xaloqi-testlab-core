@@ -14,6 +14,33 @@ from xaloqi.tester.exceptions import TransportError
 
 _PAD_BYTE = 0x00  # Pad to 8 bytes with 0x00 (spec uses 0x00, not 0xCC)
 
+# ISO 15765-2 N_WFTmax: maximum number of consecutive Flow Control WAIT
+# (FS=1) frames a tester will tolerate before giving up on a broken or
+# malicious ECU that would otherwise hold a multi-frame TX open forever.
+_WFT_MAX = 16
+
+# ISO 15765-2 N_Bs: time the sender waits for a Flow Control frame. This is a
+# transport timer and is deliberately NOT the UDS P2 response timeout (default
+# 0.15s) — a spec-compliant ECU advertising BlockSize may legitimately take
+# longer than P2 to turn around each block's FC, and timing that out mid-message
+# would break exactly the paced transfers BlockSize support exists to enable.
+_N_BS_TIMEOUT = 1.0
+
+
+def decode_st_min(raw: int) -> float:
+    """ISO 15765-2 §9.6.5.5 STmin encoding → seconds.
+
+    - 0x00-0x7F: raw milliseconds (0-127ms).
+    - 0xF1-0xF9: 100-900 microseconds in 100us steps.
+    - Everything else (0x80-0xF0, 0xFA-0xFF) is reserved; ISO 15765-2 says
+      to treat a reserved value as the safe upper bound 0x7F (127ms).
+    """
+    if 0x00 <= raw <= 0x7F:
+        return raw / 1000.0
+    if 0xF1 <= raw <= 0xF9:
+        return (raw - 0xF0) / 10000.0
+    return 0.127
+
 
 class IsoTpEngine:
     """
@@ -73,12 +100,19 @@ class IsoTpEngine:
 
         return frames
 
-    def flow_control_cts(self) -> bytes:
+    def flow_control_cts(self, block_size: int = 0, st_min: int = 0) -> bytes:
         """
         Return a Flow Control CTS frame.
-        BS=0 (no block limit), STmin=0 (no delay).
+
+        Args:
+            block_size: BS to advertise (0 = no block limit — send all
+                remaining CFs before expecting another FC). Default matches
+                previous fixed behaviour.
+            st_min: Raw STmin byte to advertise, ISO 15765-2 §9.6.5.5 encoded
+                (0 = no minimum separation time). Default matches previous
+                fixed behaviour.
         """
-        return bytes([0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+        return bytes([0x30, block_size & 0xFF, st_min & 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00])
 
     def decode(self, frames: List[bytes]) -> bytes:
         """

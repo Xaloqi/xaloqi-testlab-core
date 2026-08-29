@@ -28,9 +28,9 @@ from typing import (
 
 from .exceptions import (
     UdsError, NrcError, TimeoutError, TransportError, ConfigError, LicenseError,
-    SovdError,
+    SovdError, FlowControlOverflowError,
 )
-from ._isotp import IsoTpEngine
+from ._isotp import IsoTpEngine, decode_st_min, _WFT_MAX, _N_BS_TIMEOUT
 from ._security import derive_key
 from ._config import TesterConfig, load_config, load_eds_config, load_testlab_config
 from .transport.base import CanBus
@@ -50,7 +50,7 @@ __all__ = [
     "SecuritySeedResponse", "RoutineResponse",
     # Exceptions
     "UdsError", "NrcError", "TimeoutError", "TransportError", "ConfigError", "LicenseError",
-    "SovdError",
+    "SovdError", "FlowControlOverflowError",
     # SOVD (pro, lazy re-export)
     "SovdTester",
     # Config
@@ -276,6 +276,14 @@ class UdsTester:
         self._bus: Optional[CanBus] = None
         self._isotp = IsoTpEngine()
         self._keepalive_task: Optional[asyncio.Task] = None
+        # Serialises everything that writes to the bus. Before ISO-TP flow
+        # control, a multi-frame TX completed in one uninterrupted burst, so
+        # the background keepalive could never land between frames. Now that
+        # STmin/BlockSize make a transfer yield for seconds at a time, an
+        # unsynchronised TesterPresent Single Frame on the same tx_id would
+        # arrive mid-reassembly and abort the ECU's in-progress message —
+        # precisely during the long transfers (TransferData) this fix targets.
+        self._request_lock = asyncio.Lock()
         self._last_latency_ms: float = 0.0
 
         # DID config for multi-DID parsing (populated by from_config)
@@ -367,7 +375,19 @@ class UdsTester:
 
     async def _request(self, pdu: bytes, timeout: Optional[float] = None) -> bytes:
         """
-        Core request/response method. All service methods call this.
+        Serialising wrapper around the request/response exchange.
+
+        Holds ``_request_lock`` for the whole exchange so the background
+        keepalive task (and any concurrent caller) cannot interleave a frame
+        into an in-progress multi-frame sequence.
+        """
+        async with self._request_lock:
+            return await self._request_locked(pdu, timeout)
+
+    async def _request_locked(self, pdu: bytes, timeout: Optional[float] = None) -> bytes:
+        """
+        Core request/response method. All service methods call this via
+        :meth:`_request`, which holds the bus lock.
 
         1. Encode pdu via IsoTpEngine
         2. Send CAN frames (handling multi-frame FC handshake)
@@ -386,37 +406,48 @@ class UdsTester:
         if getattr(self._bus, "is_message_transport", False):
             return await self._request_message(pdu, effective_timeout, t_start)
 
-        # TX
+        # TX. encode() validates the payload first, so an empty PDU still
+        # raises TransportError here rather than an IndexError on pdu[0].
         frames = self._isotp.encode(pdu)
+        sid = pdu[0]
         if len(frames) == 1:
             self._log("TX", self._tx_id, frames[0])
             await self._bus.send(self._tx_id, frames[0])
         else:
-            # Multi-frame TX: send FF, wait for FC, send CFs
+            # Multi-frame TX: send FF, wait for FC, send CFs — honouring the
+            # ECU's BlockSize/STmin/WAIT/OVERFLOW (ISO 15765-2 §9.6, O-13).
             self._log("TX-FF", self._tx_id, frames[0])
             await self._bus.send(self._tx_id, frames[0])
 
-            # Wait for Flow Control
-            fc = await self._bus.recv(timeout=effective_timeout)
-            if fc is None:
-                raise TimeoutError(sid=pdu[0], timeout=effective_timeout)
-            _, fc_data = fc
-            if len(fc_data) < 1 or (fc_data[0] >> 4) != 0x3:
-                raise TransportError(f"Expected Flow Control frame, got: {fc_data.hex()}")
-            fc_type = fc_data[0] & 0x0F
-            if fc_type != 0x00:  # 0x00 = CTS
-                raise TransportError(f"Flow Control type {fc_type:#x} not supported (expected CTS=0)")
-
-            for cf in frames[1:]:
+            bs, st_raw = await self._await_flow_control(sid, _N_BS_TIMEOUT)
+            st = decode_st_min(st_raw)
+            sent_in_block = 0
+            for i, cf in enumerate(frames[1:]):
+                # STmin is strictly the minimum gap between two CONSECUTIVE
+                # CFs (ISO 15765-2 §9.6.5.5). Applying it before the first CF
+                # of a block too (i.e. right after the FC) is a superset of
+                # that requirement — it can never violate the spec, and is
+                # safer against real ECUs that are picky about the FF->CF1
+                # gap as well. With BS=0/STmin=0 (VirtualBus / xaloqi-sim
+                # --demo default) `st` is 0 and `bs` is 0, so neither branch
+                # below fires and the frame sequence is byte-for-byte
+                # identical to the pre-O-13 behaviour.
+                if st > 0:
+                    await asyncio.sleep(st)
                 self._log("TX-CF", self._tx_id, cf)
                 await self._bus.send(self._tx_id, cf)
+                sent_in_block += 1
+                is_last = (i == len(frames) - 2)
+                if bs != 0 and sent_in_block == bs and not is_last:
+                    bs, st_raw = await self._await_flow_control(sid, _N_BS_TIMEOUT)
+                    st = decode_st_min(st_raw)
+                    sent_in_block = 0
 
         # RX — collect frames
         rx_frames: List[bytes] = []
         total_len: Optional[int] = None
         received: int = 0
         expected_sn: int = 1
-        sid = pdu[0]
 
         deadline = time.monotonic() + effective_timeout
 
@@ -472,6 +503,65 @@ class UdsTester:
                     return self._check_nrc(response, sid)
 
         raise TimeoutError(sid=sid, timeout=effective_timeout)
+
+    async def _await_flow_control(self, sid: int, timeout: float) -> Tuple[int, int]:
+        """
+        Wait for a Flow Control frame from the ECU during multi-frame TX.
+
+        Honours WAIT (FS=1, bounded by N_WFTmax) and raises a dedicated
+        exception on OVERFLOW (FS=2) so callers can tell it apart from a
+        plain timeout. Filters on ``self._rx_id`` — unlike the pre-O-13 code,
+        which read whatever frame arrived next and could misread a stray
+        frame from another ECU as Flow Control.
+
+        Returns:
+            (block_size, st_min_raw) from a CTS (FS=0) Flow Control frame.
+        """
+        deadline = time.monotonic() + timeout
+        wait_count = 0
+
+        while time.monotonic() < deadline:
+            remaining = deadline - time.monotonic()
+            result = await self._bus.recv(timeout=max(0.001, remaining))
+            if result is None:
+                continue
+
+            frame_id, fc_data = result
+            if frame_id != self._rx_id:
+                continue
+
+            if len(fc_data) < 1 or (fc_data[0] >> 4) != 0x3:
+                raise TransportError(f"Expected Flow Control frame, got: {fc_data.hex()}")
+
+            fc_type = fc_data[0] & 0x0F
+
+            if fc_type == 0x00:  # CTS
+                block_size = fc_data[1] if len(fc_data) > 1 else 0
+                st_min_raw = fc_data[2] if len(fc_data) > 2 else 0
+                return block_size, st_min_raw
+
+            elif fc_type == 0x01:  # WAIT
+                wait_count += 1
+                if wait_count > _WFT_MAX:
+                    raise TransportError(
+                        f"Flow Control WAIT exceeded WFTmax={_WFT_MAX} "
+                        f"({wait_count} WAIT frames received) for SID 0x{sid:02X}"
+                    )
+                # N_Bs restarts on every WAIT (ISO 15765-2 §9.6.5.2) — keep
+                # waiting for the next FC instead of timing out.
+                deadline = time.monotonic() + timeout
+                continue
+
+            elif fc_type == 0x02:  # OVERFLOW
+                raise FlowControlOverflowError(
+                    f"ECU rejected multi-frame transfer with Flow Control "
+                    f"OVERFLOW for SID 0x{sid:02X}"
+                )
+
+            else:
+                raise TransportError(f"Flow Control type {fc_type:#x} not supported")
+
+        raise TimeoutError(sid=sid, timeout=timeout)
 
     async def _request_message(self, pdu: bytes, timeout: float, t_start: float) -> bytes:
         """
@@ -548,12 +638,19 @@ class UdsTester:
         return await self.send_key(level, key)
 
     async def request_seed(self, level: int) -> SecuritySeedResponse:
-        """0x27 SecurityAccess — seed request only."""
+        """0x27 SecurityAccess — seed request only.
+
+        The seed is taken as whatever length the ECU returned (UDS mandates
+        no fixed seed length) — `resp` here is already the exact reassembled
+        PDU (IsoTpEngine.decode strips SF padding via the length nibble and
+        truncates multi-frame to total_len), so there are never trailing pad
+        bytes to trim off.
+        """
         pdu = bytes([0x27, level * 2 - 1])
         resp = await self._request(pdu)
         if resp[0] != 0x67:
             raise TransportError(f"SecurityAccess seed response: expected 0x67, got 0x{resp[0]:02X}")
-        seed = resp[2:6]
+        seed = resp[2:]
         return SecuritySeedResponse(
             raw=resp,
             latency_ms=self._last_latency_ms,
@@ -816,15 +913,20 @@ class UdsTester:
         """0x3E TesterPresent."""
         pdu = bytes([0x3E, 0x80 if suppress_response else 0x00])
         if suppress_response:
-            # Fire-and-forget — ECU does not respond
-            if getattr(self._bus, "is_message_transport", False):
-                self._log("TX", self._tx_id, pdu)
-                await self._bus.send(self._tx_id, pdu)
-            else:
-                frames = self._isotp.encode(pdu)
-                for f in frames:
-                    self._log("TX", self._tx_id, f)
-                    await self._bus.send(self._tx_id, f)
+            # Fire-and-forget — ECU does not respond. This path bypasses
+            # _request(), so it must take the bus lock itself: it is the one
+            # the background keepalive uses, and without the lock it would
+            # write a Single Frame straight into the middle of an in-progress
+            # multi-frame TX now that STmin/BlockSize make that TX yield.
+            async with self._request_lock:
+                if getattr(self._bus, "is_message_transport", False):
+                    self._log("TX", self._tx_id, pdu)
+                    await self._bus.send(self._tx_id, pdu)
+                else:
+                    frames = self._isotp.encode(pdu)
+                    for f in frames:
+                        self._log("TX", self._tx_id, f)
+                        await self._bus.send(self._tx_id, f)
             return UdsResponse(raw=b"", latency_ms=0.0)
         resp = await self._request(pdu)
         return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)

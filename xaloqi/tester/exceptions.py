@@ -40,6 +40,10 @@ class TransportError(UdsError):
     """ISO-TP framing or CAN bus error."""
 
 
+class FlowControlOverflowError(TransportError):
+    """ECU rejected the multi-frame transfer with Flow Control OVERFLOW (FS=2)."""
+
+
 class SovdError(UdsError):
     """OpenSOVD REST API returned an error status code."""
 

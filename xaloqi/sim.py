@@ -301,12 +301,22 @@ def handle_request(pdu: bytes, state: EcuState, verbose: bool) -> bytes | None:
 # ---------------------------------------------------------------------------
 
 async def run_on_bus(bus, state_box: dict, stop: asyncio.Event,
-                     tx_id: int, verbose: bool = False) -> None:
+                     tx_id: int, verbose: bool = False, *,
+                     fc_block_size: int = 0, fc_st_min: int = 0) -> None:
     """Serve UDS requests on an already-open bus until `stop` is set.
 
     `state_box` is a one-slot dict {"state": EcuState()} so the caller can
     swap in a fresh EcuState between jobs (job-state isolation — the runner's
     --virtual mode relies on this; validation report Bug 10).
+
+    `fc_block_size` / `fc_st_min` (keyword-only) let a caller — tests, or
+    code driving the sim in-process — make this simulated ECU pace a
+    multi-frame request the way a real ECU can: advertise a non-zero
+    BlockSize/STmin in its Flow Control, and (when fc_block_size != 0) send
+    a further Flow Control after every fc_block_size consecutive frames
+    received, until the request is fully reassembled. Defaults (0, 0) leave
+    the original single-FC, no-pacing behaviour byte-identical — this is the
+    path every current free-tier user (and the SocketCAN `run()` path) hits.
     """
     while not stop.is_set():
         result = await bus.recv(timeout=0.05)
@@ -320,7 +330,8 @@ async def run_on_bus(bus, state_box: dict, stop: asyncio.Event,
         elif pci == 0x1:
             expected_len = ((frame[0] & 0x0F) << 8) | frame[1]
             chunks = [bytes(frame[2:])]
-            await bus.send(tx_id, _engine.flow_control_cts())
+            await bus.send(tx_id, _engine.flow_control_cts(fc_block_size, fc_st_min))
+            cf_since_fc = 0
             while sum(len(c) for c in chunks) < expected_len:
                 res = await bus.recv(timeout=0.5)
                 if res is None:
@@ -328,6 +339,11 @@ async def run_on_bus(bus, state_box: dict, stop: asyncio.Event,
                 _, cf = res
                 if (cf[0] >> 4) == 0x2:
                     chunks.append(bytes(cf[1:]))
+                    cf_since_fc += 1
+                    if (fc_block_size != 0 and cf_since_fc == fc_block_size
+                            and sum(len(c) for c in chunks) < expected_len):
+                        await bus.send(tx_id, _engine.flow_control_cts(fc_block_size, fc_st_min))
+                        cf_since_fc = 0
             pdu = (b"".join(chunks))[:expected_len]
         else:
             continue
