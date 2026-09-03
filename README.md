@@ -34,10 +34,7 @@ xaloqi-sim --demo
 
 *Recorded from the actual published package — not a mockup. Command and
 output are real; only the reveal pacing of the (near-instantaneous) result
-lines was adjusted for legibility. This still needs reconciling against
-the separately-adopted "vehicle bench with no vehicle" demo video (V0,
-Xaloqi GTM asset) before both ship — see the note in `roadmap/GTM_IDEAS.md`
-GTM-07.*
+lines was adjusted for legibility.*
 
 ---
 
