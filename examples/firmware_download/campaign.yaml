@@ -1,0 +1,25 @@
+jobs:
+  firmware_download:
+    description: Exercise a complete UDS firmware download sequence.
+    timeout_ms: 30000
+    on_failure: abort
+
+    steps:
+      - action: session
+        value: programming
+
+      - action: security_access
+        level: 1
+
+      - action: request_download
+        memory_address: "0x00000000"
+        memory_size: "0x00000010"
+
+      - action: transfer_data
+        file: examples/firmware_download/firmware.bin
+        memory_address: "0x00000000"
+
+      - action: request_transfer_exit
+
+      - action: session
+        value: default

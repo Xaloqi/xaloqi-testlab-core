@@ -1,0 +1,26 @@
+jobs:
+  security_access:
+    description: >
+      Verify that DID F187 is denied before SecurityAccess and readable
+      after a level-1 unlock.
+
+    timeout_ms: 10000
+    on_failure: abort
+
+    steps:
+      - action: session
+        value: extended
+
+      - action: read_did
+        did: "0xF187"
+        expect_nrc: "0x33"        # securityAccessDenied — must be locked
+
+      - action: security_access
+        level: 1
+
+      - action: read_did
+        did: "0xF187"
+        save_as: part_number      # must succeed now
+
+      - action: session
+        value: default
