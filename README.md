@@ -174,12 +174,18 @@ workflow, contributions are welcome.
 
 ## Cross-implementation tested, not just self-tested
 
-`xaloqi-tester`'s `DoipBus` (this package, Python) is run in CI against the
-[Xaloqi EDS](https://github.com/Xaloqi/EDS) DoIP server (C, `native_sim`) on
-every EDS push — a real cross-implementation, cross-language DoIP
-conversation, not two halves of one codebase talking to themselves. See
-[EDS's CI workflow](https://github.com/Xaloqi/EDS/blob/main/.github/workflows/ci.yml)
-(job: `DoIP Integration (native_sim + DoipBus)`).
+[Xaloqi Compatibility Tests](https://github.com/Xaloqi/xaloqi-compatibility-tests)
+runs the same UDS campaign against every combination of transport (CAN,
+DoIP) and RTOS (Zephyr, FreeRTOS) `Xaloqi EDS` ships examples for, using
+`xaloqi-tester`'s Python client against EDS's C runtime — a genuine
+cross-language, cross-implementation check, not two halves of one
+codebase validating each other. **Honestly:** the virtual-ECU check
+there is green and reproducible by anyone with no license; the
+real-transport matrix is still being wired up (tracked openly at
+[xaloqi-compatibility-tests#2](https://github.com/Xaloqi/xaloqi-compatibility-tests/issues/2),
+including [EDS#230](https://github.com/Xaloqi/EDS/issues/230) — EDS's own
+`DoIP Integration` CI job currently skips this exact check rather than
+proving it).
 
 ## Build → Test with Xaloqi
 
