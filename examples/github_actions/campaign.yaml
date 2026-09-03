@@ -1,0 +1,15 @@
+jobs:
+  regression:
+    description: Fast UDS regression suite for every commit.
+    timeout_ms: 10000
+    on_failure: abort
+
+    steps:
+      - action: tester_present
+        suppress: false
+
+      - action: read_did
+        did: "0xF190"
+        save_as: vin
+
+      - action: read_dtc

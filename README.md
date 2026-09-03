@@ -30,13 +30,14 @@ xaloqi-sim --demo
 > generate production UDS implementations for Zephyr and FreeRTOS.
 > **Test diagnostics?** You're in the right place.
 
-<!--
-README TODO: 20–40s terminal-recording GIF here, directly under the hero.
-Check first whether the "vehicle bench with no vehicle" demo video (V0,
-Xaloqi GTM asset) already covers this before recording a second one.
-Suggested path once recorded: docs/assets/testlab-demo.gif
-  ![Xaloqi TestLab demo](docs/assets/testlab-demo.gif)
--->
+![Xaloqi TestLab Core demo — pipx run --spec xaloqi-tester xaloqi-sim --demo, showing a real UDS conversation: VIN read, extended session, AES-CMAC SecurityAccess unlock, a security-gated DID read, and a DTC read, ending "All exchanges OK."](docs/assets/testlab-demo.gif)
+
+*Recorded from the actual published package — not a mockup. Command and
+output are real; only the reveal pacing of the (near-instantaneous) result
+lines was adjusted for legibility. This still needs reconciling against
+the separately-adopted "vehicle bench with no vehicle" demo video (V0,
+Xaloqi GTM asset) before both ship — see the note in `roadmap/GTM_IDEAS.md`
+GTM-07.*
 
 ---
 
@@ -133,6 +134,20 @@ Repeatable diagnostic tests on every push and pull request, no ECU hardware
 allocated to the CI runner.
 
 ---
+
+## Learn by doing
+
+| Recipe | What you'll prove | Hardware |
+|---|---|---|
+| [SecurityAccess](examples/security_access/) | Protected resources stay locked until UDS `0x27` unlock | None |
+| [GitHub Actions](examples/github_actions/) | Run UDS regression tests on every PR | None |
+| [Firmware download](examples/firmware_download/) | Exercise the `0x34` → `0x36` → `0x37` programming flow | None |
+| [DoIP](examples/doip/) | Move the same UDS testing model to Automotive Ethernet | DoIP endpoint (Pro) for real-network testing |
+
+**Start here:** `pipx run --spec xaloqi-tester xaloqi-sim --demo`
+
+Every recipe above is run and verified against the real published package
+before being committed — not just described.
 
 ## Try the examples
 

@@ -1,0 +1,43 @@
+name: UDS regression
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  uds:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install TestLab Core
+        run: pip install xaloqi-tester
+
+      - name: Run UDS regression
+        run: |
+          mkdir -p reports
+          testlab-run \
+            --config testlab_config.yaml \
+            --campaign examples/github_actions/campaign.yaml \
+            --job regression \
+            --virtual \
+            --json reports/run.json
+
+      - name: Analyze results
+        if: always()
+        run: |
+          if [ -f reports/run.json ]; then
+            testlab analyze --results reports/run.json
+          fi
+
+      - name: Upload diagnostic results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uds-results
+          path: reports/run.json
