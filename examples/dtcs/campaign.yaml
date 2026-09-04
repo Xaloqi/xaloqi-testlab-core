@@ -1,0 +1,35 @@
+jobs:
+  dtcs:
+    description: >
+      Read stored DTCs, prove the ECU really answered rather than
+      returning a negative response, clear them, and read back.
+
+    timeout_ms: 10000
+    on_failure: abort
+
+    steps:
+      # 1. Read stored DTCs and keep the raw response.
+      - action: read_dtc
+        save_as: dtcs_before
+
+      # 2. Prove the ECU answered. Without this the step above only shows
+      #    that *something* came back -- see "Why the assert step matters".
+      - action: assert
+        variable: dtcs_before
+        not_nrc: true
+
+      # 3. Fault-detection counters and permanent DTCs are separate
+      #    sub-functions of 0x19; a real ECU can answer one and reject
+      #    another, so exercise them explicitly.
+      - action: read_dtc_fault_counter
+      - action: read_dtc_permanent
+
+      # 4. Clear, then read back and prove the ECU still answers properly.
+      - action: clear_dtc
+
+      - action: read_dtc
+        save_as: dtcs_after
+
+      - action: assert
+        variable: dtcs_after
+        not_nrc: true
