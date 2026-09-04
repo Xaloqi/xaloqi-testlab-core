@@ -100,12 +100,21 @@ expectation and what the ECU really said:
 That check is worth doing on your own campaigns. A negative test you have
 never seen fail is a negative test you cannot trust.
 
-> ⚠️ **Misspelled assertion keys are currently ignored.** Writing
-> `expect_ncr:` instead of `expect_nrc:` does not error — the step simply
-> loses its assertion and reports `OK`. Tracked as
-> [#4](https://github.com/Xaloqi/xaloqi-testlab-core/issues/4). Until it is
-> fixed, deliberately breaking a new assertion once (as above) is the
-> reliable way to confirm it is actually wired up.
+> **Misspelled assertion keys are rejected.** Writing `expect_ncr:` instead
+> of `expect_nrc:` used to be silently ignored — the step lost its assertion
+> and still reported `OK`. Since
+> [#4](https://github.com/Xaloqi/xaloqi-testlab-core/issues/4) the campaign
+> is refused before it runs:
+>
+> ```text
+> FAIL  Campaign validation errors:
+>        t.steps[0] (read_did): unknown key 'expect_ncr'. Did you mean 'expect_nrc'?
+>
+>   Refusing to run an invalid campaign.
+> ```
+>
+> Deliberately breaking an assertion once, as above, is still worth doing —
+> validation catches a key you typo'd, not a code you got wrong.
 
 ## Against real hardware
 

@@ -99,11 +99,22 @@ pins down that the saved payload is not itself a negative response:
 once your ECU actually has stored codes — `contains: "0xC00100"` asserts a
 specific DTC is present in the response.
 
-> ⚠️ **`dtc_count:` is not an assertion.** It looks like one, but the runner
-> only ever *writes* it as an output field — a step with `dtc_count: 999`
-> passes against an ECU reporting zero DTCs. Use `assert` with `contains` or
-> `length` instead. Tracked as
-> [#4](https://github.com/Xaloqi/xaloqi-testlab-core/issues/4).
+`dtc_count:` asserts the number of stored codes directly:
+
+```yaml
+- action: read_dtc
+  dtc_count: 0        # the virtual ECU has no faults set
+```
+
+```text
+  [01/01] read_dtc      → FAIL  Expected 2 DTC(s), ECU reported 0
+```
+
+> It did **not** always work. Until
+> [#4](https://github.com/Xaloqi/xaloqi-testlab-core/issues/4), `dtc_count`
+> was only ever written as an output field and never compared, so
+> `dtc_count: 999` passed against an ECU reporting none. It is a real
+> assertion now, on both `read_dtc` and `read_dtc_permanent`.
 
 ## Try breaking it
 

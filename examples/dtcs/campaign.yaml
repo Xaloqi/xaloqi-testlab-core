@@ -8,9 +8,11 @@ jobs:
     on_failure: abort
 
     steps:
-      # 1. Read stored DTCs and keep the raw response.
+      # 1. Read stored DTCs and keep the raw response. dtc_count asserts
+      #    how many the ECU reports -- the virtual ECU has no faults set.
       - action: read_dtc
         save_as: dtcs_before
+        dtc_count: 0
 
       # 2. Prove the ECU answered. Without this the step above only shows
       #    that *something* came back -- see "Why the assert step matters".
@@ -29,6 +31,7 @@ jobs:
 
       - action: read_dtc
         save_as: dtcs_after
+        dtc_count: 0
 
       - action: assert
         variable: dtcs_after
