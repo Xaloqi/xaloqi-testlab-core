@@ -102,6 +102,64 @@ automated CI validation, and building your own integrations.
 
 ---
 
+## How this compares to udsoncan, python-can and can-isotp
+
+If you are doing UDS in Python, you have almost certainly found the
+established stack: **[python-can](https://github.com/hardbyte/python-can)**
+(the CAN bus layer) + **[can-isotp](https://github.com/pylessard/python-can-isotp)**
+(ISO 15765-2 transport) + **[udsoncan](https://github.com/pylessard/python-udsoncan)**
+(the ISO 14229 client). They are good, mature libraries and this project
+does not try to replace them.
+
+They answer a different question. That stack is a **client** — it speaks
+UDS *to an ECU that already exists*. TestLab Core is a **test harness** —
+a campaign runner plus an ECU that answers, so you can write and run tests
+before any hardware does.
+
+| | udsoncan + python-can + can-isotp | TestLab Core |
+|---|---|---|
+| **What it is** | UDS client library stack | Campaign runner + simulated ECU |
+| **Something that answers you** | Needs a real ECU. `FakeConnection` replays a 2-entry static dict — enough to smoke-test your own plumbing, not an ECU | Stateful simulator: sessions, SecurityAccess seed/key (AES-CMAC), DTCs, NRCs |
+| **Real CAN / DoIP hardware** | **Yes, free** — socketcan, J2534, and every python-can interface | **Not in core.** Core is virtual-transport only; real transports are [Pro](https://xaloqi.com) |
+| **Raw UDS service coverage** | **Broader** — 27 services, 91 client methods, incl. the full ReadDTCInformation subfunction set, 0x29 Authentication, DynamicallyDefineDataIdentifier | Focused on the ~20 actions a validation campaign uses |
+| **How you express a test** | Write Python | Declarative YAML campaign |
+| **Pass/fail + timing report** | Build it yourself | Built in (`testlab-run`, `testlab analyze`, JSON out) |
+| **Time to first result** | A CAN interface and an ECU — or write your own responder | `pip install xaloqi-tester && xaloqi-sim --demo` |
+| **License** | MIT (udsoncan, can-isotp), **LGPL-3.0-only** (python-can) | Apache-2.0 |
+
+### Use udsoncan instead when
+
+- You have hardware on the bench **now** and want to drive it for free —
+  core's real transports are a paid tier, theirs are not.
+- You need UDS services outside a validation campaign's usual set —
+  `ResponseOnEvent`, `RequestFileTransfer`, the deeper
+  `ReadDTCInformation` subfunctions, `LinkControl`.
+- You are building an application that happens to speak UDS, rather than
+  running repeatable tests against an ECU.
+
+### Use TestLab Core instead when
+
+- The ECU does not exist yet, or the bench is occupied, and you still want
+  to write and run the tests.
+- You want the tests to run in CI on every commit, with no hardware and no
+  self-hosted runner.
+- You want tests as reviewable YAML with a pass/fail report, rather than a
+  growing pile of scripts.
+
+They also compose. Nothing stops you developing campaigns against the
+simulator here and driving real hardware with udsoncan — the JSON result
+schema is documented, and the same campaign YAML runs unmodified on real
+transports if you later move to Pro.
+
+> Comparison verified 2026-09-04 against udsoncan 1.26.1, python-can 4.6.1,
+> can-isotp 2.0.7 and xaloqi-tester 1.5.2, by installing each from PyPI and
+> inspecting the actual APIs — not from documentation. If something here is
+> out of date or wrong,
+> [open an issue](https://github.com/Xaloqi/xaloqi-testlab-core/issues) and
+> it will be corrected.
+
+---
+
 ## Use it in CI
 
 A virtual ECU is useful in CI precisely because the test doesn't depend on
