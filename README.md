@@ -196,6 +196,8 @@ allocated to the CI runner.
 |---|---|---|
 | [SecurityAccess](examples/security_access/) | Protected resources stay locked until UDS `0x27` unlock | None |
 | [GitHub Actions](examples/github_actions/) | Run UDS regression tests on every PR | None |
+| [Negative responses](examples/negative_responses/) | Assert the ECU *rejects* what it should, with the right NRC | None |
+| [DTCs](examples/dtcs/) | Read, clear and re-read Diagnostic Trouble Codes (`0x19` / `0x14`) | None |
 | [Firmware download](examples/firmware_download/) | Exercise the `0x34` → `0x36` → `0x37` programming flow | None |
 | [DoIP](examples/doip/) | Move the same UDS testing model to Automotive Ethernet | DoIP endpoint (Pro) for real-network testing |
 

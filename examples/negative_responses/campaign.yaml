@@ -1,0 +1,44 @@
+jobs:
+  negative_responses:
+    description: >
+      Verify the ECU rejects invalid diagnostic requests with the correct
+      negative response code, then prove the happy path still works.
+
+    timeout_ms: 10000
+    on_failure: abort
+
+    steps:
+      # 1. Unknown identifier -> 0x31 requestOutOfRange
+      - action: read_did
+        did: "0xDEAD"
+        expect_nrc: "0x31"
+
+      # 2. Security-protected DID while locked -> 0x33 securityAccessDenied
+      - action: read_did
+        did: "0xF187"
+        expect_nrc: "0x33"
+
+      # 3. SecurityAccess in the default session -> 0x7F
+      #    serviceNotSupportedInActiveSession
+      - action: security_access
+        level: 1
+        expect_nrc: "0x7F"
+
+      # ---- positive control: the same operations must succeed once the
+      #      preconditions are actually met ----
+      - action: session
+        value: extended
+
+      - action: security_access
+        level: 1
+
+      - action: read_did
+        did: "0xF187"
+        save_as: part_number
+
+      - action: assert
+        variable: part_number
+        not_nrc: true
+
+      - action: session
+        value: default
