@@ -257,6 +257,70 @@ class JobResult:
 # Schema validation (dry-run)
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Allowed step keys (#4)
+#
+# The runner used to ignore any key it did not recognise, which for a test
+# tool is a false-pass: misspelling `expect_nrc` as `expect_ncr` silently
+# removed the assertion and the step still reported OK. Campaigns could be
+# green while asserting nothing.
+#
+# Keys accepted on EVERY step, handled in the dispatch loop rather than in a
+# per-action handler.
+# ---------------------------------------------------------------------------
+
+COMMON_STEP_KEYS = frozenset({
+    "action",       # which action to run
+    "ecu",          # workspace ECU selector
+    "expect_nrc",   # step passes iff the ECU returns exactly this NRC
+    "description",  # free-text, for humans reading the campaign
+})
+
+# Per-action keys, mirroring exactly what each _step_* handler reads.
+# Keep in sync when an action gains a parameter -- the test
+# tests/test_step_key_validation.py::test_table_matches_handlers asserts this.
+ACTION_STEP_KEYS: Dict[str, frozenset] = {
+    "session":                 frozenset({"value"}),
+    "security_access":         frozenset({"level"}),
+    "read_did":                frozenset({"did", "expect_ok", "save_as"}),
+    "write_did":               frozenset({"did", "data"}),
+    "read_memory_by_address":  frozenset({"address", "address_len", "size", "size_len", "save_as"}),
+    "write_memory_by_address": frozenset({"address", "address_len", "size_len", "data"}),
+    "read_dtc":                frozenset({"save_as", "dtc_count"}),
+    "clear_dtc":               frozenset({"group"}),
+    "read_dtc_fault_counter":  frozenset({"save_as"}),
+    "read_dtc_permanent":      frozenset({"save_as", "dtc_count"}),
+    "routine":                 frozenset({"id", "sub_fn", "save_as"}),
+    "request_download":        frozenset({"memory_address", "memory_size"}),
+    "request_upload":          frozenset({"memory_address", "memory_size"}),
+    "transfer_data":           frozenset({"file", "memory_address"}),
+    "request_transfer_exit":   frozenset(),
+    "ecu_reset":               frozenset({"reset_type", "wait_ms"}),
+    "tester_present":          frozenset({"suppress"}),
+    "delay":                   frozenset({"ms"}),
+    "assert":                  frozenset({"variable", "length", "contains", "not_nrc"}),
+    "foreach_did":             frozenset({"min_session", "expect_ok", "save_results"}),
+}
+
+
+def allowed_step_keys(action: str) -> Optional[frozenset]:
+    """Keys this action accepts, or None if the action is unknown here.
+
+    Returns None for plugin (pro) actions so their steps are not rejected by
+    a table that cannot know their parameters.
+    """
+    if action not in ACTION_STEP_KEYS:
+        return None
+    return COMMON_STEP_KEYS | ACTION_STEP_KEYS[action]
+
+
+def _suggest_key(unknown: str, allowed: frozenset) -> str:
+    """'did you mean' for a near-miss, which is the common case (#4)."""
+    import difflib
+    close = difflib.get_close_matches(unknown, sorted(allowed), n=1, cutoff=0.7)
+    return f" Did you mean '{close[0]}'?" if close else ""
+
+
 def validate_job_schema(
     job_name: str,
     job_def: dict,
@@ -318,6 +382,19 @@ def validate_job_schema(
                         f"{job_name}.steps[{i}] ({action}): "
                         f"'did' must be a 4-digit hex string (e.g. 0xF190)"
                     )
+        # Unknown / misspelled step keys (#4). A key the runner does not
+        # consume used to be silently discarded, so a typo'd assertion
+        # removed the assertion and the step still passed.
+        if action:
+            allowed = allowed_step_keys(action)
+            if allowed is not None:
+                for key in sorted(set(step) - allowed):
+                    errors.append(
+                        f"{job_name}.steps[{i}] ({action}): unknown key "
+                        f"'{key}'.{_suggest_key(key, allowed)} "
+                        f"Valid keys: {sorted(allowed)}"
+                    )
+
         # Workspace ecu: field validation
         ecu_name = step.get("ecu")
         if ecu_name is not None and known_ecus is not None:
@@ -844,16 +921,26 @@ class CampaignExecutor:
 
     async def _step_read_dtc(self, step: dict, index: int) -> StepResult:
         save_as = step.get("save_as")
+        expect_count = step.get("dtc_count")
         try:
             resp = await self._resolve_tester(step).read_dtcs()
             if save_as:
                 self.variables[save_as] = resp.raw
+            # dtc_count is an assertion, not just a reported figure (#4): it
+            # used to be written into params and never compared, so
+            # `dtc_count: 999` passed against an ECU reporting none.
+            count = len(resp.dtcs)
+            mismatch = expect_count is not None and count != expect_count
             return StepResult(
                 index=index, action="read_dtc",
-                params={"dtc_count": len(resp.dtcs)},
-                success=True,
+                params={"dtc_count": count},
+                success=not mismatch,
                 response_pdu=_hex(resp.raw),
                 saved_var=save_as,
+                error=(
+                    f"Expected {expect_count} DTC(s), ECU reported {count}"
+                    if mismatch else None
+                ),
             )
         except NrcError as e:
             return StepResult(
@@ -899,16 +986,23 @@ class CampaignExecutor:
 
     async def _step_read_dtc_permanent(self, step: dict, index: int) -> StepResult:
         save_as = step.get("save_as")
+        expect_count = step.get("dtc_count")
         try:
             resp = await self._resolve_tester(step).read_dtcs_permanent()
             if save_as:
                 self.variables[save_as] = resp.raw
+            count = len(resp.dtcs)
+            mismatch = expect_count is not None and count != expect_count
             return StepResult(
                 index=index, action="read_dtc_permanent",
-                params={"dtc_count": len(resp.dtcs)},
-                success=True,
+                params={"dtc_count": count},
+                success=not mismatch,
                 response_pdu=_hex(resp.raw),
                 saved_var=save_as,
+                error=(
+                    f"Expected {expect_count} permanent DTC(s), ECU reported {count}"
+                    if mismatch else None
+                ),
             )
         except NrcError as e:
             return StepResult(
@@ -1483,6 +1577,25 @@ def main() -> int:
     else:
         parser.print_help()
         print("\nERROR: Specify --job <name>, --all, --list, or --dry-run", file=sys.stderr)
+        return 1
+
+    # -- validate the campaign before touching the ECU ------------------------
+    # Schema validation used to run ONLY under --dry-run, so a normal run
+    # never checked the campaign at all -- which is how a misspelled
+    # assertion key reached execution and silently passed (#4). Validate the
+    # jobs we are about to run, and refuse to run an invalid campaign.
+    schema_errors: List[str] = []
+    for _name in jobs_to_run:
+        schema_errors.extend(validate_job_schema(_name, jobs[_name]))
+    if schema_errors:
+        print(col(RED, "FAIL") + "  Campaign validation errors:", file=sys.stderr)
+        for _err in schema_errors:
+            print(f"       {_err}", file=sys.stderr)
+        print(
+            "\n  Refusing to run an invalid campaign. "
+            "Fix the errors above, or re-check with --dry-run.",
+            file=sys.stderr,
+        )
         return 1
 
     # -- resolve rx/tx IDs from config ----------------------------------------
