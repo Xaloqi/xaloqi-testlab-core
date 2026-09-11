@@ -1212,3 +1212,75 @@ class TestRequestUploadAction:
     def test_request_upload_is_a_valid_action(self):
         from xaloqi.runner import VALID_ACTIONS
         assert "request_upload" in VALID_ACTIONS
+
+
+# ---------------------------------------------------------------------------
+# ECU identity across both accepted config formats
+#
+# 2026-09-11 validation campaign: `testlab-run` printed "ECU: ? v?" for the
+# standalone testlab_config.yaml format -- the one `xaloqi-sim --demo` points
+# new users at and the README's CI recipe uses -- because every consumer read
+# config["metadata"]["ecu_name"] only, while that format keeps ecu_name at the
+# top level. The bundled example's own comment on the field says "shown in
+# campaign output and HTML reports"; it was shown in neither, and the JSON
+# result carried an empty ecu_name too.
+# ---------------------------------------------------------------------------
+
+from xaloqi.runner import config_metadata, format_ecu_identity
+
+
+def test_metadata_resolves_nested_eds_format():
+    cfg = {"metadata": {"ecu_name": "BMS_MainController", "version": "1.0.0"}}
+    meta = config_metadata(cfg)
+    assert meta["ecu_name"] == "BMS_MainController"
+    assert meta["version"] == "1.0.0"
+
+
+def test_metadata_resolves_flat_standalone_format():
+    """The regression: top-level ecu_name used to be invisible."""
+    meta = config_metadata({"ecu_name": "MyECU"})
+    assert meta["ecu_name"] == "MyECU"
+
+
+def test_metadata_prefers_nested_when_both_present():
+    meta = config_metadata({"ecu_name": "flat", "metadata": {"ecu_name": "nested"}})
+    assert meta["ecu_name"] == "nested"
+
+
+def test_metadata_handles_missing_and_null_metadata():
+    assert config_metadata({}) == {}
+    assert config_metadata({"metadata": None}) == {}
+
+
+def test_identity_omits_version_when_absent():
+    """The standalone format has no version field; "v?" is noise, not data."""
+    assert format_ecu_identity({"ecu_name": "MyECU"}) == "MyECU"
+
+
+def test_identity_renders_name_and_version():
+    assert format_ecu_identity({"ecu_name": "Sim", "version": "1.0"}) == "Sim v1.0"
+
+
+def test_identity_never_renders_a_bare_question_mark():
+    """Whatever is missing, the banner must not print the old "? v?"."""
+    for cfg in ({}, {"metadata": {}}, {"ecu_name": ""}):
+        assert "?" not in format_ecu_identity(config_metadata(cfg))
+
+
+def test_bundled_standalone_example_resolves_its_ecu_name():
+    """End-to-end against the file the free tier actually ships."""
+    import pathlib
+    import yaml
+
+    example = (pathlib.Path(__file__).resolve().parents[1]
+               / "xaloqi" / "examples" / "testlab_config.yaml")
+    if not example.is_file():
+        import pytest
+        pytest.skip(f"bundled example not found at {example}")
+
+    meta = config_metadata(yaml.safe_load(example.read_text(encoding="utf-8")))
+    assert meta.get("ecu_name"), (
+        "the bundled standalone example's ecu_name is not resolvable — this is "
+        "the exact defect: the demo's suggested next command printed 'ECU: ? v?'"
+    )
+    assert "?" not in format_ecu_identity(meta)

@@ -113,7 +113,7 @@ except ImportError as _e:
 # Version
 # ---------------------------------------------------------------------------
 
-RUNNER_VERSION      = "1.5.2"
+RUNNER_VERSION      = "1.5.3"
 JSON_SCHEMA_VERSION = 1
 
 
@@ -230,6 +230,45 @@ class StepResult:
         d = asdict(self)
         d.pop("saved_var", None)
         return d
+
+
+def config_metadata(config: dict) -> dict:
+    """Resolve ECU identity across both config formats testlab-run accepts.
+
+    `UdsTester.from_config()` and `testlab-run` accept two shapes:
+
+      EDS `diagnostics_config.yaml`     standalone `testlab_config.yaml`
+      ---------------------------      -------------------------------
+      metadata:                        ecu_name: MyECU
+        ecu_name: BMS_MainController
+
+    Everything downstream read `config["metadata"]["ecu_name"]` only, so for
+    the standalone format -- the one `xaloqi-sim --demo` points new users at,
+    and the one the README's CI recipe uses -- the campaign banner printed
+    "ECU: ? v?" and the JSON/HTML reports carried an empty ECU name. The
+    bundled example's own comment on that field reads "shown in campaign
+    output and HTML reports", which it was not.
+
+    Returns a metadata dict with the nested form taking precedence, falling
+    back to the top-level keys.
+    """
+    meta = dict(config.get("metadata") or {})
+    if not meta.get("ecu_name") and config.get("ecu_name"):
+        meta["ecu_name"] = config["ecu_name"]
+    if not meta.get("version") and config.get("ecu_version"):
+        meta["version"] = config["ecu_version"]
+    return meta
+
+
+def format_ecu_identity(meta: dict) -> str:
+    """Render "<name> v<version>" for the banner, omitting what is absent.
+
+    The standalone config format has no version field, so printing "v?" for
+    every standalone run is noise, not information.
+    """
+    name = meta.get("ecu_name") or "(unnamed ECU)"
+    version = meta.get("version")
+    return f"{name} v{version}" if version else str(name)
 
 
 @dataclass
@@ -568,7 +607,7 @@ class CampaignExecutor:
         job_def    = jobs[job_name]
         steps      = job_def.get("steps", [])
         on_fail    = job_def.get("on_failure", "abort")
-        meta       = self.config.get("metadata", {})
+        meta       = config_metadata(self.config)
 
         started_at   = datetime.now(timezone.utc).isoformat()
         step_results = []
@@ -578,7 +617,7 @@ class CampaignExecutor:
         print()
         print(col(BOLD, "─" * 65))
         print(f"  Config:  {self.config_path}")
-        print(f"  ECU:     {meta.get('ecu_name', '?')} v{meta.get('version', '?')}")
+        print(f"  ECU:     {format_ecu_identity(meta)}")
         print(f"  Job:     {job_name}")
         desc = job_def.get("description", "")
         if desc:
@@ -1512,7 +1551,7 @@ def main() -> int:
 
     # -- list mode ------------------------------------------------------------
     if args.list:
-        meta = config.get("metadata", {})
+        meta = config_metadata(config)
         if args.workspace:
             print(f"  Workspace: {args.workspace}")
         else:
@@ -1520,7 +1559,7 @@ def main() -> int:
         if args.campaign:
             print(f"  Campaign:  {args.campaign}")
         if not args.workspace:
-            print(f"  ECU: {meta.get('ecu_name', '?')} v{meta.get('version', '?')}")
+            print(f"  ECU: {format_ecu_identity(meta)}")
         else:
             try:
                 ws_cfg = workspace_mode.load_workspace(args.workspace)

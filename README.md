@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.2)](https://pypi.org/project/xaloqi-tester/)
+[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.3)](https://pypi.org/project/xaloqi-tester/)
 
 **Free, open-source Python UDS (ISO 14229) client, ECU simulator, and
 campaign runner.** No hardware. No CAN interface. No commercial diagnostic
