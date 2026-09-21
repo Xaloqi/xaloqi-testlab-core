@@ -1,0 +1,26 @@
+# Maintained upstream as core/.gitignore in the private TestLab repo and
+# exported into this one by scripts/export_core.sh — edit it there, not here,
+# or the next sync will overwrite the change.
+#
+# This repo had no .gitignore until 2026-09-21, which is how 27 compiled
+# .pyc files came to be tracked under tests/__pycache__ and xaloqi/**
+# (xaloqi-testlab-core#8): the sync workflow runs `git add -A`, and this
+# repo's CI runs `pytest tests/` before it, so every sync re-committed
+# whatever bytecode the test run had just produced. They were never
+# exported — the upstream repo has always ignored them.
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+
+# OS / editor droppings
+.DS_Store
