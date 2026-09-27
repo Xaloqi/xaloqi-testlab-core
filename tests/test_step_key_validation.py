@@ -16,7 +16,7 @@ assertion but was only ever written into StepResult.params as an output,
 so `dtc_count: 999` passed against an ECU reporting none.
 
 Run:
-    XALOQI_LICENSE_SKIP=1 pytest tests/test_step_key_validation.py -v
+    pytest tests/test_step_key_validation.py -v
 """
 
 from __future__ import annotations

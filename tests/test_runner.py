@@ -12,7 +12,7 @@ Tests:
 - JSON output format (schema_version: 1 compatibility)
 
 No hardware, no license key, no network required.
-Run with: XALOQI_LICENSE_SKIP=1 pytest tests/test_runner.py -v
+Run with: pytest tests/test_runner.py -v
 """
 
 from __future__ import annotations
@@ -41,9 +41,6 @@ from xaloqi.runner import (
     JSON_SCHEMA_VERSION,
     RUNNER_VERSION,
 )
-
-os.environ["XALOQI_LICENSE_SKIP"] = "1"
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

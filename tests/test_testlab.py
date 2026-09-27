@@ -7,7 +7,7 @@ Unit tests for tools/testlab.py — analyze / trend / report / compare.
 Tests use in-memory fixture dicts — no file I/O except for report output.
 No license key, no ECU, no network required.
 
-Run with: XALOQI_LICENSE_SKIP=1 pytest tests/test_testlab.py -v
+Run with: pytest tests/test_testlab.py -v
 """
 
 from __future__ import annotations
@@ -24,9 +24,6 @@ import pytest
 # ---------------------------------------------------------------------------
 # Imports (conftest puts core/ on sys.path for repo-checkout runs)
 # ---------------------------------------------------------------------------
-
-os.environ["XALOQI_LICENSE_SKIP"] = "1"
-
 from xaloqi import testlab
 from xaloqi.testlab import (
     _load_results_file, _load_many, _step_label, _step_status_line,
