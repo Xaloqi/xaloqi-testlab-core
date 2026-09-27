@@ -634,7 +634,6 @@ class TestFromConfigEndToEnd:
     async def test_from_testlab_config(self):
         """UdsTester.from_config() loads testlab_config.yaml and opens successfully."""
         import os
-        os.environ["XALOQI_LICENSE_SKIP"] = "1"
         from xaloqi.tester import UdsTester
         from xaloqi.tester.transport.virtual import VirtualBus
 
@@ -663,7 +662,6 @@ dids:
     async def test_from_eds_config(self):
         """UdsTester.from_config() loads EDS diagnostics_config.yaml."""
         import os
-        os.environ["XALOQI_LICENSE_SKIP"] = "1"
         from xaloqi.tester import UdsTester
         from xaloqi.tester.transport.virtual import VirtualBus
 

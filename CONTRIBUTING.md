@@ -35,7 +35,7 @@ convention used by the Linux kernel and many other open source projects.
 git clone https://github.com/Xaloqi/xaloqi-testlab-core
 cd xaloqi-testlab-core
 pip install -e ".[dev]"
-XALOQI_LICENSE_SKIP=1 pytest tests/ -v
+pytest tests/ -v
 ```
 
 No license key, no hardware, and no network access are needed to build or

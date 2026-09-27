@@ -294,7 +294,7 @@ what it needs.
 git clone https://github.com/Xaloqi/xaloqi-testlab-core
 cd xaloqi-testlab-core
 pip install -e ".[dev]"
-XALOQI_LICENSE_SKIP=1 pytest tests/ -v
+pytest tests/ -v
 ```
 
 ## Who is this for?
