@@ -113,7 +113,7 @@ except ImportError as _e:
 # Version
 # ---------------------------------------------------------------------------
 
-RUNNER_VERSION      = "1.5.3"
+RUNNER_VERSION      = "1.5.4"
 JSON_SCHEMA_VERSION = 1
 
 
@@ -652,12 +652,18 @@ class CampaignExecutor:
         finished_at     = datetime.now(timezone.utc).isoformat()
 
         # Close any plugin-held resources opened during this job
-        # (SOME/IP buses, SOVD clients — registered by pro action handlers)
+        # (SOME/IP buses, SOVD clients — registered by pro action handlers).
+        # A close() failure doesn't change the job's already-computed result,
+        # but silently swallowing it left zero diagnostic trail for a real
+        # leaked resource (e.g. a SocketCAN handle that won't release) —
+        # print a warning naming the resource instead (2026-09-27 campaign).
         for closer in self.plugin_closers:
             try:
                 await closer()
-            except Exception:
-                pass
+            except Exception as exc:
+                owner = getattr(closer, "__self__", None)
+                label = type(owner).__name__ if owner is not None else repr(closer)
+                print(col(YELLOW, f"WARNING: failed to close {label}: {exc}"))
         self.plugin_closers.clear()
         self.plugin_state.clear()
 
@@ -1667,16 +1673,32 @@ def main() -> int:
             print("ERROR: Specify --job <name> or --all with --workspace", file=sys.stderr)
             return 1
 
-        all_results = asyncio.run(workspace_mode.run_workspace_campaign(
-            workspace_path=args.workspace,
-            config=config if "config" in dir() else {},
-            config_path=args.workspace,
-            jobs_to_run=jobs_to_run_ws,
-            timeout=args.timeout,
-            verbose=args.verbose,
-            someip_virtual=args.someip_virtual,
-            someip_host_override=args.someip_host,
-        ))
+        try:
+            all_results = asyncio.run(workspace_mode.run_workspace_campaign(
+                workspace_path=args.workspace,
+                config=config if "config" in dir() else {},
+                config_path=args.workspace,
+                jobs_to_run=jobs_to_run_ws,
+                timeout=args.timeout,
+                verbose=args.verbose,
+                someip_virtual=args.someip_virtual,
+                someip_host_override=args.someip_host,
+            ))
+        except TransportError as exc:
+            # Same shape as the single-ECU path below: a workspace ECU with
+            # e.g. interface: vcan0 needs a real (or vcan-kernel-module)
+            # SocketCAN device even when --someip-virtual only virtualizes
+            # the SOME/IP half — this path had no handler at all before,
+            # so that failure surfaced as a raw traceback instead of the
+            # same clean one-liner every other transport failure gets.
+            print(f"\nERROR: {exc}", file=sys.stderr)
+            return 1
+        except Exception as exc:
+            from xaloqi.tester.exceptions import LicenseError
+            if isinstance(exc, LicenseError):
+                print(f"\n{exc}", file=sys.stderr)
+                return 1
+            raise
 
         overall_rc = 0 if all(r.success for r in all_results) else 1
 

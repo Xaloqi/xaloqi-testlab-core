@@ -990,6 +990,94 @@ class TestTransferData:
 
 
 # ---------------------------------------------------------------------------
+# Plugin resource cleanup must not fail silently (2026-09-27 campaign)
+# ---------------------------------------------------------------------------
+# self.plugin_closers (SOME/IP buses, SOVD clients registered by pro action
+# handlers) used to be closed with a bare `except Exception: pass` — a real
+# close() failure left zero diagnostic trail. Must now print a warning
+# naming the resource, without changing the job's own PASS/FAIL result or
+# skipping the remaining closers.
+
+
+class TestPluginCloserCleanup:
+    @pytest.mark.asyncio
+    async def test_failed_closer_prints_warning_but_job_still_succeeds(self, capsys):
+        from xaloqi.tester import UdsTester
+        from xaloqi.tester.transport.virtual import VirtualBus
+
+        from unittest.mock import AsyncMock, MagicMock
+
+        t, _ = VirtualBus.pair("closer_cleanup")
+        tester = UdsTester(t, rx_id=0x7E8, tx_id=0x7DF, keepalive=False)
+        mock_resp = MagicMock()
+        mock_resp.raw = bytes([0x50, 0x03])
+        tester.session = AsyncMock(return_value=mock_resp)
+
+        config = {
+            **MINIMAL_CONFIG,
+            "jobs": {
+                "job": {"steps": [{"action": "session", "value": "extended"}]}
+            },
+        }
+
+        class _FakeSomeIpBus:
+            async def close(self):
+                raise RuntimeError("bus already down")
+
+        async with tester:
+            executor = CampaignExecutor(config, "cfg.yaml", tester, verbose=False)
+            executor.plugin_closers.append(_FakeSomeIpBus().close)
+            result = await executor.execute_job("job")
+
+        assert result.success is True, "a cleanup failure must not flip the job result"
+        assert executor.plugin_closers == [], "closers list must still be cleared"
+
+        out = capsys.readouterr().out
+        assert "WARNING" in out
+        assert "_FakeSomeIpBus" in out
+        assert "bus already down" in out
+
+    @pytest.mark.asyncio
+    async def test_one_failed_closer_does_not_skip_the_rest(self):
+        from xaloqi.tester import UdsTester
+        from xaloqi.tester.transport.virtual import VirtualBus
+
+        from unittest.mock import AsyncMock, MagicMock
+
+        t, _ = VirtualBus.pair("closer_cleanup_multi")
+        tester = UdsTester(t, rx_id=0x7E8, tx_id=0x7DF, keepalive=False)
+        mock_resp = MagicMock()
+        mock_resp.raw = bytes([0x50, 0x03])
+        tester.session = AsyncMock(return_value=mock_resp)
+
+        config = {
+            **MINIMAL_CONFIG,
+            "jobs": {
+                "job": {"steps": [{"action": "session", "value": "extended"}]}
+            },
+        }
+
+        closed = []
+
+        class _FailingCloser:
+            async def close(self):
+                raise RuntimeError("boom")
+
+        class _OkCloser:
+            async def close(self):
+                closed.append(self)
+
+        async with tester:
+            executor = CampaignExecutor(config, "cfg.yaml", tester, verbose=False)
+            executor.plugin_closers.append(_FailingCloser().close)
+            ok_closer = _OkCloser()
+            executor.plugin_closers.append(ok_closer.close)
+            await executor.execute_job("job")
+
+        assert closed == [ok_closer], "a failing closer must not prevent later closers from running"
+
+
+# ---------------------------------------------------------------------------
 # Library / CLI version cross-check (TestLab#28)
 # ---------------------------------------------------------------------------
 # A stale editable install (pip install -e from a previous TestLab directory)
