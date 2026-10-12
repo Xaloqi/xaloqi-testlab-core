@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "xaloqi-tester"
-version = "1.5.5"
+version = "1.5.6"
 description = "Xaloqi TestLab core — UDS ECU validation campaign runner with a built-in simulated ECU. Apache-2.0."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -49,8 +49,17 @@ include = ["xaloqi*"]
 # Bundled example config + campaign (O-11): so `xaloqi-sim --demo`'s own
 # "Next:" instruction has a real file to point pip-installed users at,
 # not just a repo-relative path that doesn't exist post-install.
+#
+# xaloqi.tester.conformance's corpus/*.json: without this, the wheel ships
+# every .py file in that package but silently omits the vector data
+# vectors.py's _CORPUS_DIR actually loads at runtime -- found by unzip -l
+# on a real built wheel, not by trusting the build log, while preparing
+# the v1.5.5 PyPI publish. load_suite() would raise FileNotFoundError for
+# every PyPI install; core/tests exercises the package from a source
+# checkout, so nothing there would have caught it either.
 [tool.setuptools.package-data]
 "xaloqi.examples" = ["*.yaml", "campaigns/*.yaml"]
+"xaloqi.tester.conformance" = ["corpus/*.json", "README.md"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
