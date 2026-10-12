@@ -113,7 +113,7 @@ except ImportError as _e:
 # Version
 # ---------------------------------------------------------------------------
 
-RUNNER_VERSION      = "1.5.4"
+RUNNER_VERSION      = "1.5.5"
 JSON_SCHEMA_VERSION = 1
 
 
@@ -188,6 +188,16 @@ SESSION_MAP = {
     "default":     Session.DEFAULT,
     "extended":    Session.EXTENDED,
     "programming": Session.PROGRAMMING,
+}
+
+# "results" accepted as an alias for "requestResults": the per-routine YAML
+# support: vocabulary elsewhere (["start", "stop", "results"]) uses the
+# lowercase form, and the mismatch cost #12 a silent START/REQUEST_RESULT mixup.
+ROUTINE_SUB_FN_MAP = {
+    "start":          RoutineControl.START,
+    "stop":           RoutineControl.STOP,
+    "requestResults": RoutineControl.REQUEST_RESULT,
+    "results":        RoutineControl.REQUEST_RESULT,
 }
 
 # The 20 built-in (free) actions. SOME/IP and SOVD actions are registered by
@@ -420,6 +430,13 @@ def validate_job_schema(
                     errors.append(
                         f"{job_name}.steps[{i}] ({action}): "
                         f"'did' must be a 4-digit hex string (e.g. 0xF190)"
+                    )
+            elif action == "routine":
+                sub_fn = step.get("sub_fn", "start")
+                if sub_fn not in ROUTINE_SUB_FN_MAP:
+                    errors.append(
+                        f"{job_name}.steps[{i}] (routine): 'sub_fn' must be one of "
+                        f"{sorted(ROUTINE_SUB_FN_MAP)}, got '{sub_fn}'"
                     )
         # Unknown / misspelled step keys (#4). A key the runner does not
         # consume used to be silently discarded, so a typo'd assertion
@@ -1061,9 +1078,17 @@ class CampaignExecutor:
         save_as  = step.get("save_as")
         rid      = int(rid_str, 16)
 
-        ctrl_map = {"start": RoutineControl.START, "stop": RoutineControl.STOP,
-                    "requestResults": RoutineControl.REQUEST_RESULT}
-        ctrl = ctrl_map.get(sub_fn, RoutineControl.START)
+        if sub_fn not in ROUTINE_SUB_FN_MAP:
+            return StepResult(
+                index=index, action="routine",
+                params={"id": rid_str, "sub_fn": sub_fn},
+                success=False,
+                error=(
+                    f"Unknown routine sub_fn: '{sub_fn}'. "
+                    f"Valid: {sorted(ROUTINE_SUB_FN_MAP)}"
+                ),
+            )
+        ctrl = ROUTINE_SUB_FN_MAP[sub_fn]
 
         try:
             resp = await self._resolve_tester(step).routine_control(rid, ctrl)

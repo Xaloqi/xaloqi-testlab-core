@@ -1,0 +1,418 @@
+{
+  "name": "uds_sid",
+  "iso_reference": "ISO 14229-1",
+  "scope_note": "Complete UDS PDUs, transport-agnostic -- run over any CanBus (via UdsTester, which handles ISO-TP segmentation itself) or any message-oriented transport your UdsTester wraps. Ported from EDS's own tests/unit_runnable/test_uds_sid_conformance_vectors.c, itself an independent port of udsoncan's own test suite (MIT, Copyright (c) 2019 Pier-Yves Lessard). Says nothing about DID/DTC/routine *content* -- only the request/response envelope (echoed SID/sub-function/DID/RID, response length, NRC byte) is the ported conformance claim; EDS's own commentary on each vector is carried into its description below. Eleven of fifteen vectors assert against EDS's generic dispatcher/core-service framing and are fixture-independent -- they hold against any EDS build. Four (tagged requires_fixture) assert against a SPECIFIC test DID (0x0001), routine (0x0012), or security algorithm that EDS's own conformance test registers as a throwaway fixture and no shipped EDS example registers identically -- run those against xaloqi.tester.conformance's reference stub (which registers the same fixture deliberately, to prove the vector's mechanics independent of EDS) or a target you have configured to match.",
+  "not_ported": [],
+  "vectors": [
+    {
+      "id": "VEC-GEN-001",
+      "name": "unsupported_sid",
+      "description": "SID 0x00 is outside ISO 14229-1's assigned range and must be rejected with the generic 3-byte negative-response form. Upstream treats this identically across six independent test files (session control, tester present, ECU reset, security access, routine control, control DTC setting, communication control) -- stronger cross-file corroboration than any single fixture.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_diagnostic_session_control.py / test_tester_present.py / test_ecu_reset.py / test_security_access.py / test_routine_control.py / test_control_dtc_setting.py / test_communication_control.py (six independent files agree)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §8.7, Table A.1",
+      "requires_fixture": false,
+      "steps": [
+        {
+          "op": "send",
+          "data": "00"
+        },
+        {
+          "op": "expect",
+          "data": "7F 00 11",
+          "note": "0x7F, SID echo, NRC 0x11 serviceNotSupported"
+        }
+      ]
+    },
+    {
+      "id": "VEC-GEN-002",
+      "name": "subfunction_not_supported_byte_exact",
+      "description": "DiagnosticSessionControl with an undefined session type (0x08) must return NRC 0x12, byte-identical to udsoncan's own canned expectation of what a compliant server sends -- cross-checked against udsoncan's Response class, whose get_payload() independently encodes [0x7F, originalSID, code] as its canonical wire structure, confirming the 3-byte form itself is not an artefact of one fixture.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_diagnostic_session_control.py::test_dsc_denied_exception",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.2",
+      "requires_fixture": false,
+      "steps": [
+        {
+          "op": "send",
+          "data": "10 08"
+        },
+        {
+          "op": "expect",
+          "data": "7F 10 12"
+        }
+      ]
+    },
+    {
+      "id": "VEC-GEN-003",
+      "name": "incorrect_length",
+      "description": "Not ported from a literal upstream byte fixture -- udsoncan's own client never constructs an intentionally malformed request, so no such fixture exists upstream. Ported instead from ISO 14229-1 Annex A's own NRC table, using DiagnosticSessionControl's documented minimum request length.",
+      "upstream": null,
+      "iso_clause": "ISO 14229-1 Annex A, NRC 0x13",
+      "requires_fixture": false,
+      "steps": [
+        {
+          "op": "send",
+          "data": "10",
+          "note": "SID only -- missing the session-type byte"
+        },
+        {
+          "op": "expect",
+          "data": "7F 10 13"
+        }
+      ]
+    },
+    {
+      "id": "VEC-GEN-004",
+      "name": "session_gating_nrc_0x7f",
+      "description": "ControlDTCSetting requested from the Default session, where EDS's own access table restricts SID 0x85 to non-default sessions. The REQUEST bytes are upstream's own ControlDTCSetting fixture; the GATING decision (which session SID 0x85 requires) is EDS's own OEM policy choice, not an ISO 14229-1 requirement -- disclosed as such, not implied to be universal.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_control_dtc_setting.py::test_set_on (request bytes only)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.5 (gating session is OEM-defined)",
+      "requires_fixture": false,
+      "steps": [
+        {
+          "op": "send",
+          "data": "85 01"
+        },
+        {
+          "op": "expect",
+          "data": "7F 85 7F",
+          "note": "NRC 0x7F serviceNotSupportedInActiveSession"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-10-001",
+      "name": "diagnostic_session_control_shape",
+      "description": "Response SHAPE only: byte0=0x50 (SID+0x40), byte1=session-type echo, length=6 (SID+session+P2hi/P2lo/P2*hi/P2*lo). The P2/P2* VALUES are the target's own server config, not asserted -- upstream's own canned 0x9988/0x1234 values belong to a different, OEM-specific ECU.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_diagnostic_session_control.py::test_dsc_success_2013_plus (shape only)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.2",
+      "requires_fixture": false,
+      "steps": [
+        {
+          "op": "send",
+          "data": "10 01"
+        },
+        {
+          "op": "expect",
+          "data": "50 01",
+          "exact": false,
+          "note": "byte0=SID+0x40, byte1=session echo (remaining P2/P2* bytes not asserted)"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-10-002",
+      "name": "suppress_bit",
+      "description": "suppressPosRspMsgIndicationBit set: the server must send no response frame at all.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_diagnostic_session_control.py::test_dsc_success_spr",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §8.6",
+      "requires_fixture": false,
+      "steps": [
+        {
+          "op": "send",
+          "data": "10 81"
+        },
+        {
+          "op": "expect_none",
+          "note": "no response frame may be sent"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-28-001",
+      "name": "communication_control_byte_exact",
+      "description": "CommunicationControl, enable node, byte-exact. Requires a non-default session (EDS's own OEM policy, not asserted elsewhere as universal).",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_communication_control.py::test_comcontrol_enable_node",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.6",
+      "requires_fixture": false,
+      "session": "extended",
+      "steps": [
+        {
+          "op": "send",
+          "data": "28 00 01"
+        },
+        {
+          "op": "expect",
+          "data": "68 00"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-85-001",
+      "name": "control_dtc_setting_byte_exact",
+      "description": "ControlDTCSetting, 'on', byte-exact. Requires a non-default session (EDS's own OEM policy).",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_control_dtc_setting.py::test_set_on",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.5",
+      "requires_fixture": false,
+      "session": "extended",
+      "steps": [
+        {
+          "op": "send",
+          "data": "85 01"
+        },
+        {
+          "op": "expect",
+          "data": "C5 01"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-14-001",
+      "name": "clear_dtc_byte_exact",
+      "description": "ClearDiagnosticInformation, byte-exact. ISO 14229-1 §12.1.2.2 permits this in any session; EDS's own access table is stricter by OEM policy and restricts it to non-default sessions -- EXTENDED is required here for that reason, not an ISO requirement.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_clear_dtc.py::test_clear_dtc_success",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §12",
+      "requires_fixture": false,
+      "session": "extended",
+      "steps": [
+        {
+          "op": "send",
+          "data": "14 12 34 56"
+        },
+        {
+          "op": "expect",
+          "data": "54"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-3E-001",
+      "name": "tester_present_byte_exact_both_directions",
+      "description": "TesterPresent, byte-exact in both directions: a plain request gets a 2-byte echo; the suppress-bit variant gets no frame at all.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_tester_present.py::test_tester_present_success / test_tester_present_success_spr",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §10.2",
+      "requires_fixture": false,
+      "steps": [
+        {
+          "op": "send",
+          "data": "3E 00"
+        },
+        {
+          "op": "expect",
+          "data": "7E 00"
+        },
+        {
+          "op": "send",
+          "data": "3E 80",
+          "note": "suppress bit set"
+        },
+        {
+          "op": "expect_none"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-27-001",
+      "name": "security_access_odd_even_routing",
+      "description": "SecurityAccess odd/even sub-function routing and response SID/echo. requires_fixture: EDS's generic 0x27 dispatcher accepts any registered level and the ODD/EVEN mechanics are sub-function-agnostic, but the KEY submitted must validate against whatever algorithm the target actually runs -- EDS's conformance test stub uses a trivial XOR (key = seed XOR 0xAA, same shape as EDS's own test_service_0x27.c), not EDS's real shipped AES-128-CMAC. Run this against the reference stub (same XOR algorithm) to exercise the mechanic; running it against a real EDS example will correctly reject the computed key with NRC 0x35 (invalidKey) -- that is the target's real cryptography working as intended, not a vector failure.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_security_access.py::TestRequestSeed.test_request_seed_success / TestSendKey.test_send_key_success",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.4",
+      "requires_fixture": true,
+      "fixture_note": "Target must accept sub-function 0x05/0x06 and validate keys as seed XOR 0xAA (EDS's own test stub algorithm, not its shipped AES-128-CMAC).",
+      "session": "extended",
+      "steps": [
+        {
+          "op": "send",
+          "data": "27 05"
+        },
+        {
+          "op": "expect_dynamic",
+          "match": "sid_subfn_then_seed",
+          "sid": "0x67",
+          "subfn": "0x05",
+          "note": "byte0=0x67 (SID+0x40), byte1=0x05 (sub-fn echo), remaining bytes = seed"
+        },
+        {
+          "op": "compute",
+          "algorithm": "xor_0xAA",
+          "from": "last_seed",
+          "store_as": "key"
+        },
+        {
+          "op": "send_computed",
+          "prefix": "27 06",
+          "value": "key"
+        },
+        {
+          "op": "expect",
+          "data": "67 06"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-22-001",
+      "name": "read_data_by_id_shape",
+      "description": "ReadDataByIdentifier response SHAPE only: byte0=0x62, bytes1-2=DID echo. requires_fixture: DID 0x0001 is EDS's own conformance-test fixture, registered by none of EDS's shipped examples (which use 0xF190/0xF18C/etc.) -- the DATA content was never the claim (EDS's own file header says so explicitly); only the echo/length envelope is.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_read_data_by_identifier.py (DID request pattern, shape only)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.9",
+      "requires_fixture": true,
+      "fixture_note": "Target must have DID 0x0001 registered, readable in the default session, 2 bytes.",
+      "steps": [
+        {
+          "op": "send",
+          "data": "22 00 01"
+        },
+        {
+          "op": "expect",
+          "data": "62 00 01",
+          "exact": false,
+          "note": "byte0=SID+0x40, bytes1-2=DID echo (trailing data bytes not asserted)"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-2E-001",
+      "name": "write_data_by_id_byte_exact",
+      "description": "WriteDataByIdentifier, byte-exact response, plus confirmation that the exact request data bytes reached the write callback. requires_fixture: DID 0x0001 (as above) AND Level-1 security unlocked -- EDS's own C conformance test gets the unlock for free by poking internal state directly (white-box), which a black-box harness cannot do; this vector therefore prepends a real RequestSeed/SendKey exchange (same XOR algorithm as VEC-SID-27-001) rather than cheating.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_write_data_by_identifier.py::test_wdbi_single_success1",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.10",
+      "requires_fixture": true,
+      "fixture_note": "Target must have DID 0x0001 registered (2-byte, read+write), and SecurityAccess level 1 gated by the XOR algorithm above.",
+      "session": "extended",
+      "steps": [
+        {
+          "op": "send",
+          "data": "27 01",
+          "note": "RequestSeed, level 1 (odd)"
+        },
+        {
+          "op": "expect_dynamic",
+          "match": "sid_subfn_then_seed",
+          "sid": "0x67",
+          "subfn": "0x01"
+        },
+        {
+          "op": "compute",
+          "algorithm": "xor_0xAA",
+          "from": "last_seed",
+          "store_as": "key"
+        },
+        {
+          "op": "send_computed",
+          "prefix": "27 02",
+          "value": "key"
+        },
+        {
+          "op": "expect",
+          "data": "67 02"
+        },
+        {
+          "op": "send",
+          "data": "2E 00 01 12 34"
+        },
+        {
+          "op": "expect",
+          "data": "6E 00 01"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-31-001",
+      "name": "routine_control_shape",
+      "description": "RoutineControl response SHAPE only: byte0=0x71, byte1=control-type echo, bytes2-3=RID echo. requires_fixture: RID 0x0012 is EDS's own conformance-test fixture, registered by none of EDS's shipped examples. The status record content was never the claim.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_routine_control.py::test_start_routine_success (shape only)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.12",
+      "requires_fixture": true,
+      "fixture_note": "Target must have RID 0x0012 registered, startRoutine supported, in the default session.",
+      "steps": [
+        {
+          "op": "send",
+          "data": "31 01 00 12 45 67 89 AA"
+        },
+        {
+          "op": "expect",
+          "data": "71 01 00 12",
+          "exact": false,
+          "note": "byte0=SID+0x40, byte1=control-type echo, bytes2-3=RID echo (status bytes not asserted)"
+        }
+      ]
+    },
+    {
+      "id": "VEC-SID-11-001",
+      "name": "ecu_reset_byte_exact",
+      "description": "Adapted reset type: upstream's own fixture uses resetType 0x55, which is neither an ISO 14229-1 Table 186 defined value (0x01-0x05) nor one EDS implements (EDS: 0x01/0x02/0x03 only). Ported using 0x01 (hardReset) instead, which both EDS and the standard accept -- the echo mechanics upstream's fixture exists to test are unchanged.",
+      "upstream": {
+        "project": "udsoncan",
+        "file": "test_ecu_reset.py::test_ecu_reset_success (adapted reset type)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 14229-1 §9.3, Table 186",
+      "requires_fixture": false,
+      "steps": [
+        {
+          "op": "send",
+          "data": "11 01"
+        },
+        {
+          "op": "expect",
+          "data": "51 01"
+        }
+      ]
+    }
+  ]
+}

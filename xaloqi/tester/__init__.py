@@ -1033,6 +1033,34 @@ class UdsTester:
         """Send raw UDS PDU, return raw response PDU."""
         return await self._request(pdu, timeout=timeout)
 
+    async def raw_exchange(
+        self,
+        pdu: bytes,
+        timeout: Optional[float] = None,
+    ) -> bytes:
+        """
+        Send a raw UDS PDU, return raw response bytes -- never raises for a
+        negative response or a timeout, unlike raw_request().
+
+        For a byte-exact conformance check, an NRC *is* the expected,
+        correct answer for several vectors (e.g. an unsupported SID must
+        come back as exactly ``7F <SID> 11``) -- raising an exception and
+        discarding those three bytes is the wrong shape for that caller.
+        A negative response reconstructs byte-identically from NrcError's
+        own fields (the fixed 3-byte ISO 14229-1 negative-response form
+        leaves nothing else to reconstruct). A timeout returns b"" --
+        indistinguishable here from a suppressed positive response
+        (suppressPosRspMsgIndicationBit), which also returns b"" from
+        _request(); conformance_vectors.runner's own vectors never need to
+        tell the two apart. See xaloqi.tester.conformance.
+        """
+        try:
+            return await self._request(pdu, timeout=timeout)
+        except NrcError as exc:
+            return bytes([0x7F, exc.sid, exc.nrc])
+        except TimeoutError:
+            return b""
+
 
 # ---------------------------------------------------------------------------
 # SyncUdsTester — synchronous facade
@@ -1162,3 +1190,6 @@ class SyncUdsTester:
 
     def raw_request(self, pdu: bytes, timeout: Optional[float] = None) -> bytes:
         return self._run(self._async_tester.raw_request(pdu, timeout))
+
+    def raw_exchange(self, pdu: bytes, timeout: Optional[float] = None) -> bytes:
+        return self._run(self._async_tester.raw_exchange(pdu, timeout))

@@ -1,0 +1,99 @@
+{
+  "name": "doip",
+  "iso_reference": "ISO 13400-2",
+  "scope_note": "Raw TCP bytes, including the 8-byte DoIP header on every frame -- these vectors test the framing/addressing mechanics the header itself carries, not a complete UDS exchange, so nothing here goes through UdsTester. Needs xaloqi.tester.conformance.runner.DoipRawProbe (this package's one new, deliberately minimal transport primitive -- see this package's README for why a free, narrow raw-TCP-bytes probe is not the same gift as xaloqi-tester-pro's full DoipBus). Ported from EDS's own tests/unit_runnable/test_doip_conformance_vectors.c, itself an independent port of python-doipclient's test_client.py (MIT, Copyright (c) 2020 Jacob Schaer). No live dogfood target was run against in this pass -- EDS's own DoIP example (examples/basic_ecu_doip) is reachable over native_sim's internal loopback only, not from the host, without a separate zeth TAP bridge this pass did not build. Disclosed, not implied otherwise: this corpus's runner mechanics are unit-tested against a local test double (see tests/), which proves the comparison logic, not interoperability with any real DoIP stack.",
+  "not_ported": [],
+  "vectors": [
+    {
+      "id": "VEC-RA-001",
+      "name": "default_activation_success",
+      "description": "Routing Activation, Default type, success. Entity logical address 0x0001 matches upstream's own test_logical_address=1, used here for an exact end-to-end byte match on the full frame, not just the payload.",
+      "upstream": {
+        "project": "python-doipclient",
+        "file": "test_client.py (activation_request / successful_activation_response, lines 17-19, 26-31)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2020 Jacob Schaer"
+      },
+      "iso_clause": "ISO 13400-2:2019 §7.3",
+      "requires_fixture": false,
+      "steps": [
+        { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 00 00 00 00 00", "note": "src=0x0E00 (tester), activation_type=0x00 (Default)" },
+        { "op": "expect", "data": "02 FD 00 06 00 00 00 09 0E 00 00 01 10 00 00 00 00", "note": "tester(0x0E00), entity(0x0001), resp code 0x10 (OK)" }
+      ]
+    },
+    {
+      "id": "VEC-RA-002",
+      "name": "non_default_activation_denied",
+      "description": "Routing Activation, non-Default type, denied. The RESPONSE bytes are upstream's own (test_failed_activation_constructor, client-decode side only); upstream's own suite pairs no specific request with this response, so the TRIGGERING request here is EDS's own (a non-zero activation type, the denial path EDS's doip_server.c implements) -- disclosed, not implied to be upstream's own request fixture.",
+      "upstream": {
+        "project": "python-doipclient",
+        "file": "test_client.py (unsuccessful_activation_response, lines 32-37 -- response bytes only)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2020 Jacob Schaer"
+      },
+      "iso_clause": "ISO 13400-2:2019 §7.3",
+      "requires_fixture": false,
+      "steps": [
+        { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 01 00 00 00 00", "note": "activation_type=0x01, the one EDS's own denial path implements" },
+        { "op": "expect", "data": "02 FD 00 06 00 00 00 09 0E 00 00 01 00 00 00 00 00", "note": "resp code 0x00 DENIED" }
+      ]
+    },
+    {
+      "id": "VEC-DIAG-ACK-001",
+      "name": "positive_ack_address_swap",
+      "description": "Diagnostic Message -> positive ack, with source/target address swapped as ISO 13400-2 §7.8 requires (SA=the ECU that's acking, TA=the tester that sent the diagnostic message -- the opposite order from the request). The UDS data bytes in the request are arbitrary (no handler need be registered; only the ack that precedes dispatch is checked).",
+      "upstream": {
+        "project": "python-doipclient",
+        "file": "test_client.py (diagnostic_request / diagnostic_ack, lines 141-143, 83-85)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2020 Jacob Schaer"
+      },
+      "iso_clause": "ISO 13400-2:2019 §7.8",
+      "requires_fixture": false,
+      "steps": [
+        { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 00 00 00 00 00", "note": "setup: routing activation (response not asserted here)" },
+        { "op": "drain", "timeout_ms": 500, "note": "drain the routing-activation response before the diagnostic exchange -- not asserted" },
+        { "op": "send", "data": "02 FD 80 01 00 00 00 07 0E 00 00 01 00 01 02", "note": "src=0x0E00 (tester), tgt=0x0001 (ECU), arbitrary UDS data" },
+        { "op": "expect", "data": "02 FD 80 02 00 00 00 05 00 01 0E 00 00", "note": "ack: SA=0x0001 (ECU), TA=0x0E00 (tester), code=0x00" }
+      ]
+    },
+    {
+      "id": "VEC-DIAG-ACK-002",
+      "name": "positive_ack_address_swap_second_address",
+      "description": "Same vector as VEC-DIAG-ACK-001, at a different ECU logical address -- an independent second data point that the SA/TA swap is not coincidental for one specific address pair.",
+      "upstream": {
+        "project": "python-doipclient",
+        "file": "test_client.py (diagnostic_request_to_address / diagnostic_ack_to_address, lines 144-146, 86-88)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2020 Jacob Schaer"
+      },
+      "iso_clause": "ISO 13400-2:2019 §7.8",
+      "requires_fixture": false,
+      "steps": [
+        { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 00 00 00 00 00", "note": "setup: routing activation against entity 0x1234 (response not asserted)" },
+        { "op": "drain", "timeout_ms": 500, "note": "drain the routing-activation response -- not asserted" },
+        { "op": "send", "data": "02 FD 80 01 00 00 00 07 0E 00 12 34 00 01 02", "note": "tgt=0x1234, a different ECU logical address than VEC-DIAG-ACK-001" },
+        { "op": "expect", "data": "02 FD 80 02 00 00 00 05 12 34 0E 00 00", "note": "ack: SA=0x1234 (ECU), TA=0x0E00 (tester), code=0x00" }
+      ]
+    },
+    {
+      "id": "VEC-ALIVE-001",
+      "name": "request_response_byte_exact",
+      "description": "Alive Check Request -> Response, full byte-exact match, payload included: the tester's own logical address, echoed from the routing activation beforehand (ISO 13400-2:2019 Table 28).",
+      "upstream": {
+        "project": "python-doipclient",
+        "file": "test_client.py (alive_check_request / alive_check_response, lines 59-64)",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2020 Jacob Schaer"
+      },
+      "iso_clause": "ISO 13400-2:2019 Table 28",
+      "requires_fixture": false,
+      "steps": [
+        { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 00 00 00 00 00", "note": "setup: routing activation (response not asserted)" },
+        { "op": "drain", "timeout_ms": 500, "note": "drain the routing-activation response -- not asserted" },
+        { "op": "send", "data": "02 FD 00 07 00 00 00 00", "note": "Alive Check Request, no payload" },
+        { "op": "expect", "data": "02 FD 00 08 00 00 00 02 0E 00", "note": "Alive Check Response, payload = tester's own logical address" }
+      ]
+    }
+  ]
+}

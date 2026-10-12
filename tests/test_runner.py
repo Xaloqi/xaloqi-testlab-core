@@ -110,6 +110,19 @@ class TestSchemaValidation:
         errors = validate_job_schema("bad", job)
         assert any("unknown action" in e for e in errors)
 
+    def test_routine_unknown_sub_fn_is_error(self):
+        # "results" matches the per-routine YAML support: vocabulary
+        # (["start", "stop", "results"]) but not this map before #12's fix;
+        # an unrelated typo like "go" must still be caught.
+        job = {"steps": [{"action": "routine", "id": "0xFF00", "sub_fn": "go"}]}
+        errors = validate_job_schema("bad", job)
+        assert any("sub_fn" in e for e in errors)
+
+    def test_routine_results_alias_is_not_an_error(self):
+        job = {"steps": [{"action": "routine", "id": "0xFF00", "sub_fn": "results"}]}
+        errors = validate_job_schema("ok", job)
+        assert errors == []
+
     def test_session_unknown_value_is_error(self):
         job = {"steps": [{"action": "session", "value": "warp_speed"}]}
         errors = validate_job_schema("bad", job)
@@ -148,6 +161,28 @@ class TestSchemaValidation:
             },
         }
         assert dry_run_config(config, job_filter="good") == 0
+
+# ---------------------------------------------------------------------------
+# _step_routine sub_fn tests (#12) — the bad sub_fn is caught before any
+# tester call, so these construct a bare CampaignExecutor with tester=None.
+# ---------------------------------------------------------------------------
+
+class TestRoutineSubFn:
+    @pytest.mark.asyncio
+    async def test_unknown_sub_fn_fails_the_step_not_silently_starts(self):
+        executor = CampaignExecutor(config={}, config_path="x", tester=None)
+        result = await executor._step_routine(
+            {"id": "0xFF00", "sub_fn": "go"}, index=0
+        )
+        assert result.success is False
+        assert "go" in result.error
+
+    @pytest.mark.asyncio
+    async def test_results_alias_reaches_request_result_not_start(self):
+        from xaloqi.runner import ROUTINE_SUB_FN_MAP
+        from xaloqi.tester import RoutineControl
+
+        assert ROUTINE_SUB_FN_MAP["results"] is RoutineControl.REQUEST_RESULT
 
 # ---------------------------------------------------------------------------
 # Config merging tests

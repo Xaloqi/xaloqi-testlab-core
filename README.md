@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.4)](https://pypi.org/project/xaloqi-tester/)
+[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.5)](https://pypi.org/project/xaloqi-tester/)
 
 **Free, open-source Python UDS (ISO 14229) client, ECU simulator, and
 campaign runner.** No hardware. No CAN interface. No commercial diagnostic
@@ -95,6 +95,13 @@ against the built-in simulator.
   Xaloqi EDS diagnostics stack, so the same result format works with
   either).
 - **`testlab analyze`** — terminal summary of a run's JSON results.
+- **`xaloqi.tester.conformance`** — byte-exact ISO-TP/UDS-SID/DoIP
+  conformance vectors, ported from the udsoncan/can-isotp/python-doipclient
+  test suites, plus a runner that judges `==` on bytes. Needs no real
+  transport: implement `CanBus`'s two methods against your own stack
+  (`python3 -m xaloqi.tester.conformance isotp --interface vcan0 ...`).
+  See `xaloqi/tester/conformance/README.md` for what a pass asserts and
+  what it refuses to claim — it is a measuring stick, not a certification.
 
 Core is licensed under **Apache-2.0** — use it for learning UDS, local
 diagnostic development, virtual ECU testing, campaign development,
@@ -246,6 +253,11 @@ real-transport matrix is still being wired up (tracked openly at
 including [EDS#230](https://github.com/Xaloqi/EDS/issues/230) — EDS's own
 `DoIP Integration` CI job currently skips this exact check rather than
 proving it).
+
+A different, narrower kind of cross-implementation check lives in
+`xaloqi.tester.conformance` (above): fixed, independently-sourced byte
+vectors judged against *any* `CanBus` you point them at, not specifically
+EDS. Point them at your own stack to check it, not just ours.
 
 ## Build → Test with Xaloqi
 

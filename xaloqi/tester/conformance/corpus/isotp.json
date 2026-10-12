@@ -1,0 +1,171 @@
+{
+  "name": "isotp",
+  "iso_reference": "ISO 15765-2",
+  "scope_note": "Raw CAN frame level -- deliberately bypasses any ISO-TP library (including this package's own _isotp.py) on the TESTER side, since these vectors test segmentation/flow-control mechanics themselves and must not have a library silently doing the right thing on our behalf. Ported from EDS's own tests/unit_runnable/test_isotp_conformance_vectors.c, itself an independent port of python-can-isotp's test_transport_layer_logic.py (MIT, Copyright (c) 2017 Pier-Yves Lessard). A second, important finding from doing this port at the wire level rather than trusting the C file's framing: EDS's own C vectors parameterize block_size/stmin per-vector (5/2, 3/5, 0/5) to exercise different flow-control shapes -- but block_size/stmin are compile-time target configuration (transport/isotp.h's ISOTP_DEFAULT_BLOCK_SIZE/STMIN_MS, both 0 in every shipped EDS example), not something a wire-level tester can dictate to a receiver. So three of this suite's most interesting vectors (the specific block_size/stmin VALUES a receiver advertises) are inherently target-configuration-dependent, not pure ISO 15765-2 mechanics -- marked requires_fixture rather than silently asserted against a target that was never configured to produce those bytes.",
+  "not_ported": [
+    {
+      "upstream_id": "VEC-RX-SF-001",
+      "reason": "Pure reassembly-content check (upstream: test_receive_single_sf) with no flow-control-content or negative-response signal to observe over the wire -- a black-box tester cannot tell 'reassembled correctly' from 'reassembled incorrectly' without something above the transport layer echoing the content back, which would make this vector's pass/fail depend on a specific DID/SID fixture rather than ISO-TP mechanics. Remains exactly what it already is: EDS's own direct, white-box unit test."
+    },
+    {
+      "upstream_id": "VEC-RX-MF-001",
+      "reason": "Same reasoning as VEC-RX-SF-001 -- FF+CF reassembly content, no wire-observable signal independent of a UDS-layer fixture."
+    },
+    {
+      "upstream_id": "VEC-RX-MF-006",
+      "reason": "Same reasoning as VEC-RX-SF-001, at the 4095-byte/SN-wraparound scale."
+    },
+    {
+      "upstream_id": "VEC-STMIN-001",
+      "reason": "Timing-based (sub-millisecond STmin decode, observed via inter-frame pacing). This pass ships no timing-tolerance model -- asserting a hard millisecond bound would be flaky under real scheduling/virtualisation jitter, and asserting nothing would be dishonest. Deferred, not silently dropped."
+    }
+  ],
+  "vectors": [
+    {
+      "id": "VEC-RX-MF-003",
+      "name": "bad_sequence_number",
+      "description": "A Consecutive Frame with the wrong sequence number must be rejected: no further Flow Control, and the malformed transfer must never reach a response (the receiver enters an error state and discards it). Config-independent -- does not depend on block_size/stmin.",
+      "upstream": {
+        "project": "python-can-isotp",
+        "file": "test_transport_layer_logic.py::test_receive_multiframe_bad_seqnum",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 15765-2:2016 §9.6",
+      "requires_fixture": false,
+      "steps": [
+        { "op": "send", "data": "10 0A 00 01 02 03 04 05", "note": "First Frame, FF_DL=10, bytes 0-5" },
+        { "op": "expect", "data": "30", "timeout_ms": 300, "note": "FC CTS after FF (byte 0 only -- BS/STmin are config-dependent, not asserted here)" },
+        { "op": "send", "data": "22 06 07 08 09", "note": "Consecutive Frame with SN=2 -- wrong, expected SN=1" },
+        { "op": "expect_none", "timeout_ms": 300, "note": "no further FC may follow a rejected CF" }
+      ]
+    },
+    {
+      "id": "VEC-RX-REAL-DEFAULT-001",
+      "name": "fc_matches_actual_shipped_default",
+      "description": "NOT an upstream-sourced vector -- added here because every shipped EDS example's real-world ISO-TP config is block_size=0, stmin_ms=0 (transport/isotp.h's ISOTP_DEFAULT_BLOCK_SIZE/STMIN_MS), which none of the upstream-ported RX-MF vectors above happen to test byte-exact (they use 5/2, 3/5, 0/5 to exercise different *shapes*). This checks the one FC byte pattern a real, unmodified, as-shipped EDS target actually produces: CTS, BS=0, STmin=0, exactly once, for the whole transfer, regardless of its length.",
+      "upstream": null,
+      "iso_clause": "ISO 15765-2:2016 §9.6.5",
+      "requires_fixture": false,
+      "fixture_note": "Not requires_fixture in the sense the other vectors in this file use it: block_size=0/stmin_ms=0 IS every shipped EDS example's real default, so this runs by default against an EDS target. It is still not a universal ISO 15765-2 requirement -- a different implementation's real default may differ, and this vector would legitimately fail there for that reason, not a defect.",
+      "steps": [
+        { "op": "send", "data": "10 1E 00 01 02 03 04 05", "note": "First Frame, FF_DL=30, bytes 0-5" },
+        { "op": "expect", "data": "30 00 00", "timeout_ms": 300, "note": "FC after FF: CTS, BS=0, STmin=0" },
+        { "op": "send", "data": "21 06 07 08 09 0A 0B 0C", "note": "CF1" },
+        { "op": "send", "data": "22 0D 0E 0F 10 11 12 13", "note": "CF2" },
+        { "op": "send", "data": "23 14 15 16 17 18 19 1A", "note": "CF3 -- would close a block if BS!=0" },
+        { "op": "expect_none", "timeout_ms": 300, "note": "BS=0 is unlimited: no further FC after CF3" },
+        { "op": "send", "data": "24 1B 1C 1D 1E", "note": "CF4, completes the 30-byte transfer" },
+        { "op": "expect_none", "timeout_ms": 300, "note": "no FC may follow the final CF" }
+      ]
+    },
+    {
+      "id": "VEC-RX-MF-002",
+      "name": "fc_cts_exact_bytes_bs5_stmin2",
+      "description": "Flow Control after a First Frame must carry exactly the receiver's configured block_size/stmin -- checked here against block_size=5, stmin=2, the upstream fixture's own configuration.",
+      "upstream": {
+        "project": "python-can-isotp",
+        "file": "test_transport_layer_logic.py::test_receive_multiframe_check_flowcontrol",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 15765-2:2016 §9.6.5.3",
+      "requires_fixture": true,
+      "fixture_note": "Requires a target configured with block_size=5, stmin_ms=2. No shipped EDS example is (default is 0/0) -- run against xaloqi.tester.conformance's reference stub, or a target you have configured to match.",
+      "steps": [
+        { "op": "send", "data": "10 0A 00 01 02 03 04 05", "note": "First Frame, FF_DL=10" },
+        { "op": "expect", "data": "30 05 02", "timeout_ms": 300, "note": "FC: CTS, BS=5, STmin=2" }
+      ]
+    },
+    {
+      "id": "VEC-RX-MF-004",
+      "name": "periodic_block_boundary_fc_bs3_stmin5",
+      "description": "With block_size=3, a further Flow Control is required every 3 Consecutive Frames, and only then -- none mid-block, none after the final CF.",
+      "upstream": {
+        "project": "python-can-isotp",
+        "file": "test_transport_layer_logic.py::test_long_multiframe_2_flow_control",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 15765-2:2016 §9.6.5",
+      "requires_fixture": true,
+      "fixture_note": "Requires a target configured with block_size=3, stmin_ms=5. No shipped EDS example is (default is 0/0).",
+      "steps": [
+        { "op": "send", "data": "10 1E 00 01 02 03 04 05", "note": "First Frame, FF_DL=30" },
+        { "op": "expect", "data": "30 03 05", "timeout_ms": 300, "note": "FC after FF: CTS, BS=3, STmin=5" },
+        { "op": "send", "data": "21 06 07 08 09 0A 0B 0C", "note": "CF1" },
+        { "op": "expect_none", "timeout_ms": 300, "note": "no FC mid-block after CF1" },
+        { "op": "send", "data": "22 0D 0E 0F 10 11 12 13", "note": "CF2" },
+        { "op": "expect_none", "timeout_ms": 300, "note": "no FC mid-block after CF2" },
+        { "op": "send", "data": "23 14 15 16 17 18 19 1A", "note": "CF3 -- closes block 1 (BS=3)" },
+        { "op": "expect", "data": "30 03 05", "timeout_ms": 300, "note": "a further FC is required after BS=3 CFs" },
+        { "op": "send", "data": "24 1B 1C 1D", "note": "CF4, completes the 30-byte transfer" },
+        { "op": "expect_none", "timeout_ms": 300, "note": "no FC may follow the final CF" }
+      ]
+    },
+    {
+      "id": "VEC-RX-MF-005",
+      "name": "blocksize_zero_single_fc_stmin5",
+      "description": "block_size=0 means unlimited: exactly one Flow Control for the whole PDU, regardless of length.",
+      "upstream": {
+        "project": "python-can-isotp",
+        "file": "test_transport_layer_logic.py::test_long_multiframe_blocksize_zero",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 15765-2:2016 §9.6.5",
+      "requires_fixture": true,
+      "fixture_note": "Requires a target configured with block_size=0, stmin_ms=5. Every shipped EDS example has block_size=0 but stmin_ms=0, not 5 -- hence still fixture-dependent on the exact STmin byte; see VEC-RX-REAL-DEFAULT-001 for the as-shipped (0,0) check.",
+      "steps": [
+        { "op": "send", "data": "10 1E 00 01 02 03 04 05", "note": "First Frame, FF_DL=30" },
+        { "op": "expect", "data": "30 00 05", "timeout_ms": 300, "note": "FC: CTS, BS=0, STmin=5" },
+        { "op": "send", "data": "21 06 07 08 09 0A 0B 0C", "note": "CF1" },
+        { "op": "expect_none", "timeout_ms": 300 },
+        { "op": "send", "data": "22 0D 0E 0F 10 11 12 13", "note": "CF2" },
+        { "op": "expect_none", "timeout_ms": 300 },
+        { "op": "send", "data": "23 14 15 16 17 18 19 1A", "note": "CF3" },
+        { "op": "expect_none", "timeout_ms": 300, "note": "BS=0 is unlimited: no further FC may ever be sent" },
+        { "op": "send", "data": "24 1B 1C 1D", "note": "CF4, completes the 30-byte transfer" },
+        { "op": "expect_none", "timeout_ms": 300 }
+      ]
+    },
+    {
+      "id": "VEC-TX-SF-001",
+      "name": "single_frame_tx_pci_exact",
+      "description": "A short UDS response must be sent as a single frame with the correct PCI nibble (length in the high nibble). Reimagined from upstream's raw 1-byte ISO-TP transmit check (EDS has no public API to transmit an arbitrary raw payload outside a UDS exchange) using TesterPresent, whose 2-byte positive response is the smallest real, universal UDS exchange: request 3E 00, response 7E 00, single CAN frame, PCI byte 0x02.",
+      "upstream": {
+        "project": "python-can-isotp",
+        "file": "test_transport_layer_logic.py::test_send_single_frame_after_empty_payload",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 15765-2:2016 §9.5",
+      "requires_fixture": false,
+      "steps": [
+        { "op": "send", "data": "02 3E 00 00 00 00 00 00", "note": "UDS request TesterPresent (3E 00), single frame" },
+        { "op": "expect", "data": "02 7E 00", "timeout_ms": 300, "note": "single-frame response, PCI=0x02 (length=2), SID+0x40, sub-fn echo" }
+      ]
+    },
+    {
+      "id": "VEC-TX-MF-001",
+      "name": "multiframe_tx_cf_content_and_fc_compliance",
+      "description": "A long UDS response must be correctly segmented into FF+CFs, and the sender must honour the Flow Control WE issue (BS=0, STmin=0: pump every CF without waiting). Reduced in scale from upstream's 4095-byte/SN-wraparound vector (which needs a response at least that long -- no shipped EDS example has one) to the VIN read's real 17-byte response (20 bytes total: SID+DID echo+17 data bytes = one FF + two CFs), independently verified against real EDS over real CAN before being encoded here (see the Xaloqi EDS repo's PR history around the CDA interop demo for the full wire trace). The sequence-number wraparound edge case upstream's vector exercises at 4095 bytes is NOT exercised at this scale -- disclosed, not implied.",
+      "upstream": {
+        "project": "python-can-isotp",
+        "file": "test_transport_layer_logic.py::test_send_blocksize_zero",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
+      },
+      "iso_clause": "ISO 15765-2:2016 §9.6",
+      "requires_fixture": true,
+      "fixture_note": "Requires a target with DID 0xF190 (VIN, 17 bytes) readable in the default session -- true for every EDS basic_ecu*-family example, not a universal ISO requirement.",
+      "steps": [
+        { "op": "send", "data": "03 22 F1 90 00 00 00 00", "note": "UDS request ReadDataByIdentifier(0xF190), single frame" },
+        { "op": "expect", "data": "10 14 62 F1 90", "timeout_ms": 300, "note": "First Frame: FF_DL=0x14 (20), SID 0x62 + DID echo + first data byte begins" },
+        { "op": "send", "data": "30 00 00", "note": "our FC: CTS, BS=0, STmin=0 -- target must now send every CF without waiting" },
+        { "op": "expect", "data": "21", "timeout_ms": 300, "note": "CF1, SN=1 (byte 0 only -- VIN content is target-specific, PCI/SN is the ISO-TP claim)" },
+        { "op": "expect", "data": "22", "timeout_ms": 300, "note": "CF2, SN=2, completes the 20-byte response" }
+      ]
+    }
+  ]
+}
