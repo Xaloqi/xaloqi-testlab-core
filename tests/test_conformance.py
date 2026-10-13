@@ -243,3 +243,26 @@ async def test_doip_runner_mechanics_against_a_local_test_double():
         await server_task
 
     assert report.all_passed, report.results[0].detail
+
+
+# --- upstream attribution (TestLab#84) -------------------------------------
+# Runs the real guard rather than reimplementing its logic here: a test that
+# re-derives the check can agree with a broken check. Offline mode only --
+# `--online` re-verifies the pinned table against GitHub and must never be
+# able to fail a test run because a third party had an outage.
+
+def test_upstream_attribution_matches_pinned_licences():
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    script = Path(__file__).parent.parent / "scripts" / "verify_upstream_attribution.py"
+    assert script.is_file(), f"attribution guard missing at {script}"
+    proc = subprocess.run(
+        [sys.executable, str(script)], capture_output=True, text=True, timeout=120
+    )
+    assert proc.returncode == 0, (
+        "upstream attribution check failed -- an inaccurate copyright notice in a "
+        "redistributed MIT vector is a licensing defect, not a typo:\n"
+        f"{proc.stdout}\n{proc.stderr}"
+    )

@@ -118,15 +118,24 @@ established stack: **[python-can](https://github.com/hardbyte/python-can)**
 (the ISO 14229 client). They are good, mature libraries and this project
 does not try to replace them.
 
-They answer a different question. That stack is a **client** — it speaks
-UDS *to an ECU that already exists*. TestLab Core is a **test harness** —
-a campaign runner plus an ECU that answers, so you can write and run tests
+They answer a different question. That stack is a **client**, and the thing
+that answers it is yours to supply. TestLab Core is a **test harness** — a
+campaign runner plus a stateful ECU simulator, so you can write and run tests
 before any hardware does.
+
+> **Corrected 2026-10-13.** This section previously said the stack *"needs a real
+> ECU"*. That was wrong, and udsoncan's author told us so: he built it for
+> testing. The connection layer is pluggable — `SocketConnection` and
+> `QueueConnection` for inter- and intra-process use — and `can-isotp` takes a
+> custom lower layer, `python-can` has a loopback mode, and Linux has `vcan`.
+> Four loopback points, so the stack validates from the application layer down to
+> the link layer with or without hardware. The real difference is narrower than we
+> wrote it: what it does not ship is a *stateful responder*.
 
 | | udsoncan + python-can + can-isotp | TestLab Core |
 |---|---|---|
 | **What it is** | UDS client library stack | Campaign runner + simulated ECU |
-| **Something that answers you** | Needs a real ECU. `FakeConnection` replays a 2-entry static dict — enough to smoke-test your own plumbing, not an ECU | Stateful simulator: sessions, SecurityAccess seed/key (AES-CMAC), DTCs, NRCs |
+| **Something that answers you** | **You supply it.** Testing without hardware is well supported — pluggable connections, `can-isotp` custom lower layer, `python-can` loopback, Linux `vcan`. What is not shipped is a stateful responder; `FakeConnection` replays a 2-entry static dict | Stateful simulator: sessions, SecurityAccess seed/key (AES-CMAC), DTCs, NRCs |
 | **Real CAN / DoIP hardware** | **Yes, free** — socketcan, J2534, and every python-can interface | **Not in core.** Core is virtual-transport only; real transports are [Pro](https://xaloqi.com) |
 | **Raw UDS service coverage** | **Broader** — 27 services, 91 client methods, incl. the full ReadDTCInformation subfunction set, 0x29 Authentication, DynamicallyDefineDataIdentifier | Focused on the ~20 actions a validation campaign uses |
 | **How you express a test** | Write Python | Declarative YAML campaign |

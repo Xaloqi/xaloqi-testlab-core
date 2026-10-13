@@ -1,7 +1,7 @@
 {
   "name": "uds_sid",
   "iso_reference": "ISO 14229-1",
-  "scope_note": "Complete UDS PDUs, transport-agnostic -- run over any CanBus (via UdsTester, which handles ISO-TP segmentation itself) or any message-oriented transport your UdsTester wraps. Ported from EDS's own tests/unit_runnable/test_uds_sid_conformance_vectors.c, itself an independent port of udsoncan's own test suite (MIT, Copyright (c) 2019 Pier-Yves Lessard). Says nothing about DID/DTC/routine *content* -- only the request/response envelope (echoed SID/sub-function/DID/RID, response length, NRC byte) is the ported conformance claim; EDS's own commentary on each vector is carried into its description below. Eleven of fifteen vectors assert against EDS's generic dispatcher/core-service framing and are fixture-independent -- they hold against any EDS build. Four (tagged requires_fixture) assert against a SPECIFIC test DID (0x0001), routine (0x0012), or security algorithm that EDS's own conformance test registers as a throwaway fixture and no shipped EDS example registers identically -- run those against xaloqi.tester.conformance's reference stub (which registers the same fixture deliberately, to prove the vector's mechanics independent of EDS) or a target you have configured to match.",
+  "scope_note": "Complete UDS PDUs, transport-agnostic -- run over any CanBus (via UdsTester, which handles ISO-TP segmentation itself) or any message-oriented transport your UdsTester wraps. Ported from EDS's own tests/unit_runnable/test_uds_sid_conformance_vectors.c, itself an independent port of udsoncan's own test suite (MIT, Copyright (c) 2017 Pier-Yves Lessard). Says nothing about DID/DTC/routine *content* -- only the request/response envelope (echoed SID/sub-function/DID/RID, response length, NRC byte) is the ported conformance claim; EDS's own commentary on each vector is carried into its description below. Eleven of fifteen vectors assert against EDS's generic dispatcher/core-service framing and are fixture-independent -- they hold against any EDS build. Four (tagged requires_fixture) assert against a SPECIFIC test DID (0x0001), routine (0x0012), or security algorithm that EDS's own conformance test registers as a throwaway fixture and no shipped EDS example registers identically -- run those against xaloqi.tester.conformance's reference stub (which registers the same fixture deliberately, to prove the vector's mechanics independent of EDS) or a target you have configured to match.",
   "not_ported": [],
   "vectors": [
     {
@@ -12,7 +12,7 @@
         "project": "udsoncan",
         "file": "test_diagnostic_session_control.py / test_tester_present.py / test_ecu_reset.py / test_security_access.py / test_routine_control.py / test_control_dtc_setting.py / test_communication_control.py (six independent files agree)",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §8.7, Table A.1",
       "requires_fixture": false,
@@ -36,7 +36,7 @@
         "project": "udsoncan",
         "file": "test_diagnostic_session_control.py::test_dsc_denied_exception",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.2",
       "requires_fixture": false,
@@ -78,7 +78,7 @@
         "project": "udsoncan",
         "file": "test_control_dtc_setting.py::test_set_on (request bytes only)",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.5 (gating session is OEM-defined)",
       "requires_fixture": false,
@@ -102,7 +102,7 @@
         "project": "udsoncan",
         "file": "test_diagnostic_session_control.py::test_dsc_success_2013_plus (shape only)",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.2",
       "requires_fixture": false,
@@ -127,7 +127,7 @@
         "project": "udsoncan",
         "file": "test_diagnostic_session_control.py::test_dsc_success_spr",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §8.6",
       "requires_fixture": false,
@@ -150,7 +150,7 @@
         "project": "udsoncan",
         "file": "test_communication_control.py::test_comcontrol_enable_node",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.6",
       "requires_fixture": false,
@@ -174,7 +174,7 @@
         "project": "udsoncan",
         "file": "test_control_dtc_setting.py::test_set_on",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.5",
       "requires_fixture": false,
@@ -198,7 +198,7 @@
         "project": "udsoncan",
         "file": "test_clear_dtc.py::test_clear_dtc_success",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §12",
       "requires_fixture": false,
@@ -222,7 +222,7 @@
         "project": "udsoncan",
         "file": "test_tester_present.py::test_tester_present_success / test_tester_present_success_spr",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §10.2",
       "requires_fixture": false,
@@ -253,7 +253,7 @@
         "project": "udsoncan",
         "file": "test_security_access.py::TestRequestSeed.test_request_seed_success / TestSendKey.test_send_key_success",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.4",
       "requires_fixture": true,
@@ -296,7 +296,7 @@
         "project": "udsoncan",
         "file": "test_read_data_by_identifier.py (DID request pattern, shape only)",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.9",
       "requires_fixture": true,
@@ -322,7 +322,7 @@
         "project": "udsoncan",
         "file": "test_write_data_by_identifier.py::test_wdbi_single_success1",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.10",
       "requires_fixture": true,
@@ -373,7 +373,7 @@
         "project": "udsoncan",
         "file": "test_routine_control.py::test_start_routine_success (shape only)",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.12",
       "requires_fixture": true,
@@ -399,7 +399,7 @@
         "project": "udsoncan",
         "file": "test_ecu_reset.py::test_ecu_reset_success (adapted reset type)",
         "license": "MIT",
-        "copyright": "Copyright (c) 2019 Pier-Yves Lessard"
+        "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §9.3, Table 186",
       "requires_fixture": false,
