@@ -19,9 +19,8 @@ a sketch. Used here only as an ordinary dependency (import, no
 modification, no redistribution of its source) -- the ordinary way any
 project depends on an LGPL library without itself being bound by LGPL.
 
-Tested directly against real EDS over a real vxcan pair as part of
-BUILD-1's interop campaign infrastructure -- see
-scripts/dogfood_against_eds.py in this directory.
+Tested directly against real EDS over a real vxcan pair -- see
+scripts/dogfood_against_eds.sh (repo root).
 
 Usage:
     bus = PythonCanBus(channel="vxcan1", interface="socketcan")
