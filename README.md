@@ -263,6 +263,13 @@ including [EDS#230](https://github.com/Xaloqi/EDS/issues/230) — EDS's own
 `DoIP Integration` CI job currently skips this exact check rather than
 proving it).
 
+The clearest instance of this today is
+[Xaloqi/Zephyr-Reference-ECU](https://github.com/Xaloqi/Zephyr-Reference-ECU)
+— a complete body-control-module application built on EDS, not a toy
+example: real NUCLEO-H753ZI hardware, CAN and DoIP transports, MCUboot
+secure boot. Its `native_sim` build is runnable end-to-end against
+`xaloqi-tester`'s free `--virtual` campaign, no license required.
+
 A different, narrower kind of cross-implementation check lives in
 `xaloqi.tester.conformance` (above): fixed, independently-sourced byte
 vectors judged against *any* `CanBus` you point them at, not specifically
