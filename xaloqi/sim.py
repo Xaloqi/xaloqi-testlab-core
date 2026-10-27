@@ -76,6 +76,48 @@ class EcuState:
 
 
 # ---------------------------------------------------------------------------
+# Access table (session / security gates)
+# ---------------------------------------------------------------------------
+
+_NON_DEFAULT = frozenset({0x02, 0x03, 0x04})
+_PROGRAMMING = frozenset({0x02})
+
+# service id -> (sessions the service is available in, needs SecurityAccess).
+# Mirrors the default access table of the EDS stack (core/uds_access_table.c).
+# The stack checks it after finding the service and before looking at the
+# request, so a bare SID in the wrong session is 0x7F, not 0x13. Tied to the
+# compiled stack by core/tests/test_sim_acl.py (TestLab#93). Services missing
+# here are open in every session, like the stack's own rows for them.
+# 0x2A and 0x2F are gated in the stack but not implemented by this simulator.
+SERVICE_ACL: dict[int, tuple[frozenset[int], bool]] = {
+    0x14: (_NON_DEFAULT, False),   # ClearDiagnosticInformation
+    0x23: (_PROGRAMMING, True),    # ReadMemoryByAddress
+    0x27: (_NON_DEFAULT, False),   # SecurityAccess
+    0x28: (_NON_DEFAULT, False),   # CommunicationControl
+    0x2E: (_NON_DEFAULT, True),    # WriteDataByIdentifier
+    0x34: (_PROGRAMMING, True),    # RequestDownload
+    0x35: (_PROGRAMMING, True),    # RequestUpload
+    0x36: (_PROGRAMMING, True),    # TransferData
+    0x37: (_PROGRAMMING, True),    # RequestTransferExit
+    0x3D: (_PROGRAMMING, True),    # WriteMemoryByAddress
+    0x85: (_NON_DEFAULT, False),   # ControlDTCSetting
+}
+
+
+def _acl_refusal(sid: int, state: "EcuState") -> bytes | None:
+    """The negative response the access table gives, or None to let it through."""
+    rule = SERVICE_ACL.get(sid)
+    if rule is None:
+        return None
+    sessions, needs_unlock = rule
+    if state.session not in sessions:
+        return bytes([0x7F, sid, 0x7F])  # serviceNotSupportedInActiveSession
+    if needs_unlock and not state.security_unlocked:
+        return bytes([0x7F, sid, 0x33])  # securityAccessDenied
+    return None
+
+
+# ---------------------------------------------------------------------------
 # UDS request dispatcher
 # ---------------------------------------------------------------------------
 
@@ -89,19 +131,19 @@ def handle_request(pdu: bytes, state: EcuState, verbose: bool) -> bytes | None:
 
     sid = pdu[0]
 
+    refusal = _acl_refusal(sid, state)
+    if refusal is not None:
+        return refusal
+
     # 0x10 DiagnosticSessionControl
     if sid == 0x10:
         sub = pdu[1] if len(pdu) > 1 else 0
-        if sub == 0x01:  # DEFAULT
-            state.session = 0x01
+        if sub in (0x01, 0x02, 0x03):  # DEFAULT, PROGRAMMING, EXTENDED
+            # Every session change relocks SecurityAccess, not only the return
+            # to default (ISO 14229-1:2026 §9.2.1; EDS SEC-DSC-RELOCK-01).
+            state.session = sub
             state.security_unlocked = False
-            return bytes([0x50, 0x01, 0x00, 0x19, 0x01, 0xF4])
-        elif sub == 0x02:  # PROGRAMMING
-            state.session = 0x02
-            return bytes([0x50, 0x02, 0x00, 0x19, 0x01, 0xF4])
-        elif sub == 0x03:  # EXTENDED
-            state.session = 0x03
-            return bytes([0x50, 0x03, 0x00, 0x19, 0x01, 0xF4])
+            return bytes([0x50, sub, 0x00, 0x19, 0x01, 0xF4])
         return bytes([0x7F, 0x10, 0x12])  # subFunctionNotSupported
 
     # 0x11 ECUReset
@@ -165,8 +207,6 @@ def handle_request(pdu: bytes, state: EcuState, verbose: bool) -> bytes | None:
     if sid == 0x23:
         if len(pdu) < 4:
             return bytes([0x7F, 0x23, 0x13])  # incorrectMessageLength
-        if state.session != 0x02 or not state.security_unlocked:
-            return bytes([0x7F, 0x23, 0x7F])  # serviceNotSupportedInActiveSession
         alfid    = pdu[1]
         addr_len = alfid & 0x0F
         size_len = (alfid >> 4) & 0x0F
@@ -185,8 +225,6 @@ def handle_request(pdu: bytes, state: EcuState, verbose: bool) -> bytes | None:
     if sid == 0x27:
         if len(pdu) < 2:
             return bytes([0x7F, 0x27, 0x13])
-        if state.session == 0x01:
-            return bytes([0x7F, 0x27, 0x7F])  # serviceNotSupportedInActiveSession
         sub = pdu[1]
         if sub % 2 == 1:
             # Seed request (odd sub-function)
@@ -215,8 +253,6 @@ def handle_request(pdu: bytes, state: EcuState, verbose: bool) -> bytes | None:
         if len(pdu) < 3:
             return bytes([0x7F, 0x2E, 0x13])
         did_id = int.from_bytes(pdu[1:3], "big")
-        if state.session == 0x01:
-            return bytes([0x7F, 0x2E, 0x7F])  # serviceNotSupportedInActiveSession
         state.dids[did_id] = pdu[3:]
         return bytes([0x6E]) + pdu[1:3]
 
@@ -230,15 +266,11 @@ def handle_request(pdu: bytes, state: EcuState, verbose: bool) -> bytes | None:
 
     # 0x34 RequestDownload
     if sid == 0x34:
-        if state.session != 0x02:
-            return bytes([0x7F, 0x34, 0x7F])
         # maxBlockLen=0x0FFF in lengthAndFormat=0x20
         return bytes([0x74, 0x20, 0x0F, 0xFF])
 
     # 0x35 RequestUpload
     if sid == 0x35:
-        if state.session != 0x02:
-            return bytes([0x7F, 0x35, 0x7F])
         # maxBlockLen=0x0FFF in lengthAndFormat=0x20 (same as download)
         return bytes([0x75, 0x20, 0x0F, 0xFF])
 
@@ -255,8 +287,6 @@ def handle_request(pdu: bytes, state: EcuState, verbose: bool) -> bytes | None:
     if sid == 0x3D:
         if len(pdu) < 4:
             return bytes([0x7F, 0x3D, 0x13])  # incorrectMessageLength
-        if state.session != 0x02 or not state.security_unlocked:
-            return bytes([0x7F, 0x3D, 0x7F])  # serviceNotSupportedInActiveSession
         alfid    = pdu[1]
         addr_len = alfid & 0x0F
         size_len = (alfid >> 4) & 0x0F

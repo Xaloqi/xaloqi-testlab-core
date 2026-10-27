@@ -27,6 +27,11 @@ jobs:
       - action: read_dtc_permanent
 
       # 4. Clear, then read back and prove the ECU still answers properly.
+      #    ClearDiagnosticInformation is refused in the default session
+      #    (NRC 0x7F), as on an EDS ECU, so enter the extended session first.
+      - action: session
+        value: extended
+
       - action: clear_dtc
 
       - action: read_dtc

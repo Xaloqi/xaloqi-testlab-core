@@ -110,14 +110,25 @@ async def _generic_ecu(bus: VirtualBus, responses: dict, stop: asyncio.Event):
                 break
 
 
+def _transfer_ready_state():
+    """A simulator state in which 0x36 TransferData is available: programming
+    session, SecurityAccess unlocked. The simulator gates the transfer services
+    like the EDS stack does (TestLab#93); these tests are about ISO-TP pacing,
+    not about the gate, so they start past it."""
+    from xaloqi import sim
+    state = sim.EcuState()
+    state.session = 0x02
+    state.security_unlocked = True
+    return state
+
+
 def _multi_frame_payload(n_cfs: int, sid: int = 0x36) -> bytes:
     """Build a UDS PDU that ISO-TP encodes into exactly `n_cfs` consecutive
     frames after the First Frame (each CF carries 7 bytes; FF carries 6).
 
     Default SID 0x36 (TransferData) so a run against the real simulator
-    (`xaloqi.sim.handle_request`) gets a deterministic single-byte-echo
-    positive response regardless of active session — unlike e.g. 0x2E
-    WriteDataByIdentifier, which is session-gated.
+    (`xaloqi.sim.handle_request`, in `_transfer_ready_state()`) gets a
+    deterministic single-byte-echo positive response.
     """
     total_len = 6 + n_cfs * 7
     payload = bytes([sid]) + bytes((i % 256) for i in range(total_len - 1))
@@ -138,7 +149,7 @@ async def test_stmin_paces_tx_end_to_end():
     from xaloqi import sim
 
     tester_bus, ecu_bus = VirtualBus.pair("stmin_e2e")
-    state_box = {"state": sim.EcuState()}
+    state_box = {"state": _transfer_ready_state()}
     stop = asyncio.Event()
     task = asyncio.create_task(
         sim.run_on_bus(ecu_bus, state_box, stop, tx_id=_ECU_ID,
@@ -372,7 +383,7 @@ async def test_bs0_stmin0_regression_unchanged(monkeypatch):
     monkeypatch.setattr(asyncio, "sleep", counting_sleep)
 
     tester_bus, ecu_bus = VirtualBus.pair("regression_test")
-    state_box = {"state": sim.EcuState()}
+    state_box = {"state": _transfer_ready_state()}
     stop = asyncio.Event()
     task = asyncio.create_task(
         sim.run_on_bus(ecu_bus, state_box, stop, tx_id=_ECU_ID)  # defaults: BS=0, STmin=0
@@ -470,7 +481,7 @@ async def test_keepalive_never_interleaves_into_multiframe_tx():
     from xaloqi import sim
 
     tester_bus, ecu_bus = VirtualBus.pair("keepalive_race")
-    state_box = {"state": sim.EcuState()}
+    state_box = {"state": _transfer_ready_state()}
     stop = asyncio.Event()
     # STmin=0x0A (10ms) x 9 CFs keeps the CF loop busy well past the shortened
     # keepalive period below.

@@ -24,16 +24,17 @@ testlab-run \
 ```
 
 ```text
-  [01/07] read_dtc                           → OK           (0 ms)
-  [02/07] assert                             → OK           (0 ms)
-  [03/07] read_dtc_fault_counter             → OK           (0 ms)
-  [04/07] read_dtc_permanent                 → OK           (0 ms)
-  [05/07] clear_dtc                          → OK           (0 ms)
-  [06/07] read_dtc                           → OK           (0 ms)
-  [07/07] assert                             → OK           (0 ms)
+  [01/08] read_dtc                           → OK           (0 ms)
+  [02/08] assert                             → OK           (0 ms)
+  [03/08] read_dtc_fault_counter             → OK           (0 ms)
+  [04/08] read_dtc_permanent                 → OK           (0 ms)
+  [05/08] session(extended)                  → OK           (0 ms)
+  [06/08] clear_dtc                          → OK           (0 ms)
+  [07/08] read_dtc                           → OK           (0 ms)
+  [08/08] assert                             → OK           (0 ms)
 
   Result:  PASS
-  Steps:   7/7 steps passed
+  Steps:   8/8 steps passed
 ```
 
 ## What this is actually testing
@@ -127,7 +128,7 @@ Point an `assert` at a variable that was never saved:
 ```
 
 ```text
-  [02/07] assert                             → FAIL  Variable 'not_a_real_variable' not set
+  [02/08] assert                             → FAIL  Variable 'not_a_real_variable' not set
 ```
 
 Or give it a length the response cannot have — `assert` reports both the

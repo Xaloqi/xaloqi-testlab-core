@@ -1307,9 +1307,11 @@ class TestRequestUploadAction:
         ))
 
     def test_request_upload_in_programming_session_passes(self):
-        # Sim answers 0x35 with 0x75 only in programming session (0x02).
+        # Sim answers 0x35 with 0x75 only in programming session (0x02) after
+        # SecurityAccess, like the EDS stack's access table (TestLab#93).
         results = self._run([
             {"action": "session", "value": "programming"},
+            {"action": "security_access", "level": 1},
             {"action": "request_upload", "memory_address": "0x08000000",
              "memory_size": "0x1000"},
         ])
@@ -1317,6 +1319,17 @@ class TestRequestUploadAction:
         assert steps[-1].action == "request_upload"
         assert steps[-1].success, "0x35 should succeed in programming session"
         assert steps[-1].response_pdu.startswith("75")
+
+    def test_request_upload_without_security_access_is_refused(self):
+        # Programming session but locked: the stack answers 0x33, not 0x75.
+        results = self._run([
+            {"action": "session", "value": "programming"},
+            {"action": "request_upload", "memory_address": "0x08000000",
+             "memory_size": "0x1000"},
+        ])
+        step = results[0].steps[-1]
+        assert step.success is False
+        assert step.nrc == 0x33
 
     def test_request_upload_wrong_session_fails_with_nrc(self):
         # Default session → sim returns NRC 0x7F, step fails (not a crash).

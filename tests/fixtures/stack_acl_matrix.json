@@ -1,0 +1,1559 @@
+{
+ "source": "EDS 805b000 harness build of examples/basic_ecu, default access table",
+ "gate": "7F = serviceNotSupportedInActiveSession, 33 = securityAccessDenied, pass = neither",
+ "cells": [
+  {
+   "sid": 16,
+   "kind": "full",
+   "request": "1003",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "full",
+   "request": "1003",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "full",
+   "request": "1003",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "full",
+   "request": "1003",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "full",
+   "request": "1003",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "bare",
+   "request": "10",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "bare",
+   "request": "10",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "bare",
+   "request": "10",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "bare",
+   "request": "10",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 16,
+   "kind": "bare",
+   "request": "10",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "full",
+   "request": "1101",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "full",
+   "request": "1101",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "full",
+   "request": "1101",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "full",
+   "request": "1101",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "full",
+   "request": "1101",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "bare",
+   "request": "11",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "bare",
+   "request": "11",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "bare",
+   "request": "11",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "bare",
+   "request": "11",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 17,
+   "kind": "bare",
+   "request": "11",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 20,
+   "kind": "full",
+   "request": "14FFFFFF",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 20,
+   "kind": "full",
+   "request": "14FFFFFF",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 20,
+   "kind": "full",
+   "request": "14FFFFFF",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 20,
+   "kind": "full",
+   "request": "14FFFFFF",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 20,
+   "kind": "full",
+   "request": "14FFFFFF",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 20,
+   "kind": "bare",
+   "request": "14",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 20,
+   "kind": "bare",
+   "request": "14",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 20,
+   "kind": "bare",
+   "request": "14",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 20,
+   "kind": "bare",
+   "request": "14",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 20,
+   "kind": "bare",
+   "request": "14",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "full",
+   "request": "1902FF",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "full",
+   "request": "1902FF",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "full",
+   "request": "1902FF",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "full",
+   "request": "1902FF",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "full",
+   "request": "1902FF",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "bare",
+   "request": "19",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "bare",
+   "request": "19",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "bare",
+   "request": "19",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "bare",
+   "request": "19",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 25,
+   "kind": "bare",
+   "request": "19",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "full",
+   "request": "22F190",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "full",
+   "request": "22F190",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "full",
+   "request": "22F190",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "full",
+   "request": "22F190",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "full",
+   "request": "22F190",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "bare",
+   "request": "22",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "bare",
+   "request": "22",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "bare",
+   "request": "22",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "bare",
+   "request": "22",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 34,
+   "kind": "bare",
+   "request": "22",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 35,
+   "kind": "full",
+   "request": "23440802000000000010",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 35,
+   "kind": "full",
+   "request": "23440802000000000010",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 35,
+   "kind": "full",
+   "request": "23440802000000000010",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 35,
+   "kind": "full",
+   "request": "23440802000000000010",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 35,
+   "kind": "full",
+   "request": "23440802000000000010",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 35,
+   "kind": "bare",
+   "request": "23",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 35,
+   "kind": "bare",
+   "request": "23",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 35,
+   "kind": "bare",
+   "request": "23",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 35,
+   "kind": "bare",
+   "request": "23",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 35,
+   "kind": "bare",
+   "request": "23",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 39,
+   "kind": "full",
+   "request": "2701",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 39,
+   "kind": "full",
+   "request": "2701",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 39,
+   "kind": "full",
+   "request": "2701",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 39,
+   "kind": "full",
+   "request": "2701",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 39,
+   "kind": "full",
+   "request": "2701",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 39,
+   "kind": "bare",
+   "request": "27",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 39,
+   "kind": "bare",
+   "request": "27",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 39,
+   "kind": "bare",
+   "request": "27",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 39,
+   "kind": "bare",
+   "request": "27",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 39,
+   "kind": "bare",
+   "request": "27",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 40,
+   "kind": "full",
+   "request": "280001",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 40,
+   "kind": "full",
+   "request": "280001",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 40,
+   "kind": "full",
+   "request": "280001",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 40,
+   "kind": "full",
+   "request": "280001",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 40,
+   "kind": "full",
+   "request": "280001",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 40,
+   "kind": "bare",
+   "request": "28",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 40,
+   "kind": "bare",
+   "request": "28",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 40,
+   "kind": "bare",
+   "request": "28",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 40,
+   "kind": "bare",
+   "request": "28",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 40,
+   "kind": "bare",
+   "request": "28",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 42,
+   "kind": "full",
+   "request": "2A04",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 42,
+   "kind": "full",
+   "request": "2A04",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 42,
+   "kind": "full",
+   "request": "2A04",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 42,
+   "kind": "full",
+   "request": "2A04",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 42,
+   "kind": "full",
+   "request": "2A04",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 42,
+   "kind": "bare",
+   "request": "2A",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 42,
+   "kind": "bare",
+   "request": "2A",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 42,
+   "kind": "bare",
+   "request": "2A",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 42,
+   "kind": "bare",
+   "request": "2A",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 42,
+   "kind": "bare",
+   "request": "2A",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 46,
+   "kind": "full",
+   "request": "2EF18C01020304",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 46,
+   "kind": "full",
+   "request": "2EF18C01020304",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 46,
+   "kind": "full",
+   "request": "2EF18C01020304",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 46,
+   "kind": "full",
+   "request": "2EF18C01020304",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 46,
+   "kind": "full",
+   "request": "2EF18C01020304",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 46,
+   "kind": "bare",
+   "request": "2E",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 46,
+   "kind": "bare",
+   "request": "2E",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 46,
+   "kind": "bare",
+   "request": "2E",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 46,
+   "kind": "bare",
+   "request": "2E",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 46,
+   "kind": "bare",
+   "request": "2E",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 47,
+   "kind": "full",
+   "request": "2FF18700",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 47,
+   "kind": "full",
+   "request": "2FF18700",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 47,
+   "kind": "full",
+   "request": "2FF18700",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 47,
+   "kind": "full",
+   "request": "2FF18700",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 47,
+   "kind": "full",
+   "request": "2FF18700",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 47,
+   "kind": "bare",
+   "request": "2F",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 47,
+   "kind": "bare",
+   "request": "2F",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 47,
+   "kind": "bare",
+   "request": "2F",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 47,
+   "kind": "bare",
+   "request": "2F",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 47,
+   "kind": "bare",
+   "request": "2F",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "full",
+   "request": "3101FF00",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "full",
+   "request": "3101FF00",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "full",
+   "request": "3101FF00",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "full",
+   "request": "3101FF00",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "full",
+   "request": "3101FF00",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "bare",
+   "request": "31",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "bare",
+   "request": "31",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "bare",
+   "request": "31",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "bare",
+   "request": "31",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 49,
+   "kind": "bare",
+   "request": "31",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 52,
+   "kind": "full",
+   "request": "3400440802000000000010",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 52,
+   "kind": "full",
+   "request": "3400440802000000000010",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 52,
+   "kind": "full",
+   "request": "3400440802000000000010",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 52,
+   "kind": "full",
+   "request": "3400440802000000000010",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 52,
+   "kind": "full",
+   "request": "3400440802000000000010",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 52,
+   "kind": "bare",
+   "request": "34",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 52,
+   "kind": "bare",
+   "request": "34",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 52,
+   "kind": "bare",
+   "request": "34",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 52,
+   "kind": "bare",
+   "request": "34",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 52,
+   "kind": "bare",
+   "request": "34",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 53,
+   "kind": "full",
+   "request": "3500440802000000000010",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 53,
+   "kind": "full",
+   "request": "3500440802000000000010",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 53,
+   "kind": "full",
+   "request": "3500440802000000000010",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 53,
+   "kind": "full",
+   "request": "3500440802000000000010",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 53,
+   "kind": "full",
+   "request": "3500440802000000000010",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 53,
+   "kind": "bare",
+   "request": "35",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 53,
+   "kind": "bare",
+   "request": "35",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 53,
+   "kind": "bare",
+   "request": "35",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 53,
+   "kind": "bare",
+   "request": "35",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 53,
+   "kind": "bare",
+   "request": "35",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 54,
+   "kind": "full",
+   "request": "3601AA",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 54,
+   "kind": "full",
+   "request": "3601AA",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 54,
+   "kind": "full",
+   "request": "3601AA",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 54,
+   "kind": "full",
+   "request": "3601AA",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 54,
+   "kind": "full",
+   "request": "3601AA",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 54,
+   "kind": "bare",
+   "request": "36",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 54,
+   "kind": "bare",
+   "request": "36",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 54,
+   "kind": "bare",
+   "request": "36",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 54,
+   "kind": "bare",
+   "request": "36",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 54,
+   "kind": "bare",
+   "request": "36",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 55,
+   "kind": "full",
+   "request": "37",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 55,
+   "kind": "full",
+   "request": "37",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 55,
+   "kind": "full",
+   "request": "37",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 55,
+   "kind": "full",
+   "request": "37",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 55,
+   "kind": "full",
+   "request": "37",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 55,
+   "kind": "bare",
+   "request": "37",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 55,
+   "kind": "bare",
+   "request": "37",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 55,
+   "kind": "bare",
+   "request": "37",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 55,
+   "kind": "bare",
+   "request": "37",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 55,
+   "kind": "bare",
+   "request": "37",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 61,
+   "kind": "full",
+   "request": "3D44080200000000001000000000000000000000000000000000",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 61,
+   "kind": "full",
+   "request": "3D44080200000000001000000000000000000000000000000000",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 61,
+   "kind": "full",
+   "request": "3D44080200000000001000000000000000000000000000000000",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 61,
+   "kind": "full",
+   "request": "3D44080200000000001000000000000000000000000000000000",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 61,
+   "kind": "full",
+   "request": "3D44080200000000001000000000000000000000000000000000",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 61,
+   "kind": "bare",
+   "request": "3D",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 61,
+   "kind": "bare",
+   "request": "3D",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "33"
+  },
+  {
+   "sid": 61,
+   "kind": "bare",
+   "request": "3D",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 61,
+   "kind": "bare",
+   "request": "3D",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 61,
+   "kind": "bare",
+   "request": "3D",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "7F"
+  },
+  {
+   "sid": 62,
+   "kind": "full",
+   "request": "3E00",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "full",
+   "request": "3E00",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "full",
+   "request": "3E00",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "full",
+   "request": "3E00",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "full",
+   "request": "3E00",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "bare",
+   "request": "3E",
+   "session": "default",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "bare",
+   "request": "3E",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "bare",
+   "request": "3E",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "bare",
+   "request": "3E",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 62,
+   "kind": "bare",
+   "request": "3E",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 133,
+   "kind": "full",
+   "request": "8501",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 133,
+   "kind": "full",
+   "request": "8501",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 133,
+   "kind": "full",
+   "request": "8501",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 133,
+   "kind": "full",
+   "request": "8501",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 133,
+   "kind": "full",
+   "request": "8501",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 133,
+   "kind": "bare",
+   "request": "85",
+   "session": "default",
+   "unlocked": false,
+   "gate": "7F"
+  },
+  {
+   "sid": 133,
+   "kind": "bare",
+   "request": "85",
+   "session": "programming",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 133,
+   "kind": "bare",
+   "request": "85",
+   "session": "programming",
+   "unlocked": true,
+   "gate": "pass"
+  },
+  {
+   "sid": 133,
+   "kind": "bare",
+   "request": "85",
+   "session": "extended",
+   "unlocked": false,
+   "gate": "pass"
+  },
+  {
+   "sid": 133,
+   "kind": "bare",
+   "request": "85",
+   "session": "extended",
+   "unlocked": true,
+   "gate": "pass"
+  }
+ ],
+ "transitions": [
+  {
+   "name": "unlock in extended, 10 03 again",
+   "steps": [
+    "10 03",
+    "UNLOCK",
+    "10 03"
+   ],
+   "request": "2EF18C01020304",
+   "gate": "33"
+  },
+  {
+   "name": "unlock in extended, 10 02",
+   "steps": [
+    "10 03",
+    "UNLOCK",
+    "10 02"
+   ],
+   "request": "2EF18C01020304",
+   "gate": "33"
+  },
+  {
+   "name": "unlock in extended, 10 01, 10 03",
+   "steps": [
+    "10 03",
+    "UNLOCK",
+    "10 01",
+    "10 03"
+   ],
+   "request": "2EF18C01020304",
+   "gate": "33"
+  }
+ ]
+}
