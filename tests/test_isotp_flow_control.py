@@ -119,6 +119,9 @@ def _transfer_ready_state():
     state = sim.EcuState()
     state.session = 0x02
     state.security_unlocked = True
+    # ... with a download running, as after 0x34, and the block counter at 0:
+    # _multi_frame_payload() starts its data with 0x00 after the SID.
+    state.transfer = {"size": 4096, "received": 0, "next_seq": 0}
     return state
 
 

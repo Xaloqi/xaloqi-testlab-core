@@ -36,6 +36,28 @@ class TimeoutError(UdsError):
         )
 
 
+class ResponsePendingTimeoutError(TimeoutError):
+    """The ECU kept answering NRC 0x78 (responsePending) past the tester's cap.
+
+    A subclass of :class:`TimeoutError`, so code that already treats a
+    timeout as "no final response" keeps doing so.
+    """
+
+    def __init__(self, sid: int, pending_count: int, elapsed: float, cap: float) -> None:
+        self.pending_count = pending_count
+        self.elapsed = elapsed
+        self.cap = cap
+        super().__init__(sid=sid, timeout=cap)
+        self.args = (
+            f"No final response to SID 0x{sid:02X} after {pending_count} "
+            f"responsePending (0x78) frames in {elapsed:.3f}s "
+            f"(max_pending={cap:.3f}s)",
+        )
+
+    def __str__(self) -> str:
+        return self.args[0]
+
+
 class TransportError(UdsError):
     """ISO-TP framing or CAN bus error."""
 

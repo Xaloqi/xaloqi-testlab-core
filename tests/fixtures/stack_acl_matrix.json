@@ -1,5 +1,5 @@
 {
- "source": "EDS 805b000 harness build of examples/basic_ecu, default access table",
+ "source": "EDS f217fc8 harness build of examples/basic_ecu, default access table",
  "gate": "7F = serviceNotSupportedInActiveSession, 33 = securityAccessDenied, pass = neither",
  "cells": [
   {

@@ -25,11 +25,6 @@ from xaloqi.tester._security import derive_key
 _FIXTURE = json.loads((Path(__file__).parent / "fixtures" / "stack_acl_matrix.json").read_text())
 _SESSION = {"default": 0x01, "programming": 0x02, "extended": 0x03}
 
-# Services the EDS access table gates that this simulator does not implement at
-# all (it answers 0x11 everywhere). Tracked in TestLab#94.
-_UNMODELLED = {0x2A, 0x2F}
-
-
 def _send(state, pdu):
     return sim.handle_request(bytes(pdu), state, False)
 
@@ -53,8 +48,6 @@ def _cell_id(c):
 
 @pytest.mark.parametrize("cell", _FIXTURE["cells"], ids=_cell_id)
 def test_gate_matches_stack(cell):
-    if cell["sid"] in _UNMODELLED and cell["gate"] != "pass":
-        pytest.xfail("service not modelled by the simulator (TestLab#94)")
     state = sim.EcuState()
     if _SESSION[cell["session"]] != 0x01:
         assert _send(state, [0x10, _SESSION[cell["session"]]])[0] == 0x50
@@ -83,4 +76,4 @@ def test_fixture_covers_every_gated_service():
     gated_in_stack = {c["sid"] for c in _FIXTURE["cells"] if c["gate"] != "pass"}
     assert gated_in_stack == {0x14, 0x23, 0x27, 0x28, 0x2A, 0x2E, 0x2F,
                               0x34, 0x35, 0x36, 0x37, 0x3D, 0x85}
-    assert set(sim.SERVICE_ACL) == gated_in_stack - _UNMODELLED
+    assert set(sim.SERVICE_ACL) == gated_in_stack

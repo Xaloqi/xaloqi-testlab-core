@@ -1,0 +1,4089 @@
+{
+ "source": "EDS f217fc8 harness build of examples/basic_ecu",
+ "class": "pos = positive response, none = no response, NRC:xx = negative response",
+ "probes": [
+  {
+   "name": "10",
+   "steps": [
+    "10 03"
+   ],
+   "request": "10",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "10 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1001",
+   "stack": "pos"
+  },
+  {
+   "name": "10 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100100",
+   "stack": "pos"
+  },
+  {
+   "name": "10 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100300",
+   "stack": "pos"
+  },
+  {
+   "name": "10 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "10000000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "10010000",
+   "stack": "pos"
+  },
+  {
+   "name": "10 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "10030000",
+   "stack": "pos"
+  },
+  {
+   "name": "10 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1004",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100400",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1080",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "108000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "108100",
+   "stack": "none"
+  },
+  {
+   "name": "11",
+   "steps": [
+    "10 03"
+   ],
+   "request": "11",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "11 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1100",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1101",
+   "stack": "pos"
+  },
+  {
+   "name": "11 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110100",
+   "stack": "pos"
+  },
+  {
+   "name": "11 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110300",
+   "stack": "pos"
+  },
+  {
+   "name": "11 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "11000000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "11010000",
+   "stack": "pos"
+  },
+  {
+   "name": "11 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "11030000",
+   "stack": "pos"
+  },
+  {
+   "name": "11 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1104",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110400",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1180",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "118000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "118100",
+   "stack": "none"
+  },
+  {
+   "name": "14",
+   "steps": [
+    "10 03"
+   ],
+   "request": "14",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1400",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1401",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "140000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "140100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "140300",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "14000000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "14 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "14010000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "14 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "14030000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "14 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1404",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "140400",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1480",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "148000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "14 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "148100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19",
+   "steps": [
+    "10 03"
+   ],
+   "request": "19",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1900",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1901",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190100",
+   "stack": "pos"
+  },
+  {
+   "name": "19 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190300",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "19000000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "19010000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "19030000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1904",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190400",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1980",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "198000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "198100",
+   "stack": "none"
+  },
+  {
+   "name": "22",
+   "steps": [
+    "10 03"
+   ],
+   "request": "22",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2200",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2201",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "220000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "22 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "220100",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "22 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "220300",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "22 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "22000000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "22010000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "22030000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2204",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "220400",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "22 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2280",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "228000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "22 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "228100",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "23",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "23",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "23 00",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "2300",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 01",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "2301",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 0000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "230000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 0100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "230100",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 0300",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "230300",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 000000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "23000000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 010000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "23010000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 030000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "23030000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 04",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "2304",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 0400",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "230400",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 80",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "2380",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 8000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "238000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "23 8100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "238100",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "27",
+   "steps": [
+    "10 03"
+   ],
+   "request": "27",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "27 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2700",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "27 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2701",
+   "stack": "pos"
+  },
+  {
+   "name": "27 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "27 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270100",
+   "stack": "pos"
+  },
+  {
+   "name": "27 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270300",
+   "stack": "pos"
+  },
+  {
+   "name": "27 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "27000000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "27 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "27010000",
+   "stack": "pos"
+  },
+  {
+   "name": "27 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "27030000",
+   "stack": "pos"
+  },
+  {
+   "name": "27 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2704",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "27 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270400",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "27 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2780",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "27 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "278000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "27 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "278100",
+   "stack": "none"
+  },
+  {
+   "name": "28",
+   "steps": [
+    "10 03"
+   ],
+   "request": "28",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "28 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2800",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "28 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2801",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "28 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "28 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280100",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "28 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280300",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "28 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "28000000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "28 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "28010000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "28 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "28030000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "28 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2804",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280400",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2880",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "28 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "288000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "28 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "288100",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2A 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A00",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A01",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2A 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A0000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A0100",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A0300",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A000000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A010000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A030000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A04",
+   "stack": "pos"
+  },
+  {
+   "name": "2A 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A0400",
+   "stack": "pos"
+  },
+  {
+   "name": "2A 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A80",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A8000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2A 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2A8100",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2E",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 00",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E00",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 01",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E01",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 0000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E0000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 0100",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E0100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 0300",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E0300",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 000000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E000000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2E 010000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E010000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2E 030000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E030000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2E 04",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E04",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 0400",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E0400",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 80",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E80",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 8000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E8000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2E 8100",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2E8100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 00",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F00",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 01",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F01",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 0000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F0000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 0100",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F0100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 0300",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F0300",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 000000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F000000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2F 010000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F010000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2F 030000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F030000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "2F 04",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F04",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 0400",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F0400",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 80",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F80",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 8000",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F8000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "2F 8100",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2F8100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31",
+   "steps": [
+    "10 03"
+   ],
+   "request": "31",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3101",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "310000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "310100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "310300",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "31000000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "31 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "31010000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "31 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "31030000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "31 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3104",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "310400",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3180",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "318000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "31 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "318100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "34",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "34",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "34 00",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3400",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "34 01",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3401",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "34 0000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "340000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "34 0100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "340100",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "34 0300",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "340300",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "34 000000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "34000000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "34 010000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "34010000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "34 030000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "34030000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "34 04",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3404",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "34 0400",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "340400",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "34 80",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3480",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "34 8000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "348000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "34 8100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "348100",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "35",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "35",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "35 00",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3500",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "35 01",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3501",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "35 0000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "350000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "35 0100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "350100",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "35 0300",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "350300",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "35 000000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "35000000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "35 010000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "35010000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "35 030000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "35030000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "35 04",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3504",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "35 0400",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "350400",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "35 80",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3580",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "35 8000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "358000",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "35 8100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "358100",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "36",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "36",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "36 00",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3600",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "36 01",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3601",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "36 0000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "360000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 0100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "360100",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 0300",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "360300",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 000000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "36000000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 010000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "36010000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 030000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "36030000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 04",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3604",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "36 0400",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "360400",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 80",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3680",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "36 8000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "368000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 8100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "368100",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "37",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 00",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3700",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 01",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3701",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 0000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "370000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 0100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "370100",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 0300",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "370300",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 000000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "37000000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 010000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "37010000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 030000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "37030000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 04",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3704",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 0400",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "370400",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 80",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3780",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 8000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "378000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 8100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "378100",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "3D",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 00",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D00",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 01",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D01",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 0000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D0000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 0100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D0100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 0300",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D0300",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 000000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D000000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 010000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D010000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 030000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D030000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 04",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D04",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 0400",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D0400",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 80",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D80",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 8000",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D8000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3D 8100",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3D8100",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3E",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "3E 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E00",
+   "stack": "pos"
+  },
+  {
+   "name": "3E 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0000",
+   "stack": "pos"
+  },
+  {
+   "name": "3E 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0100",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0300",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E000000",
+   "stack": "pos"
+  },
+  {
+   "name": "3E 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E010000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E030000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E04",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0400",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E80",
+   "stack": "none"
+  },
+  {
+   "name": "3E 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E8000",
+   "stack": "none"
+  },
+  {
+   "name": "3E 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E8100",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85",
+   "steps": [
+    "10 03"
+   ],
+   "request": "85",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "85 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8500",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8501",
+   "stack": "pos"
+  },
+  {
+   "name": "85 0000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 0100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850100",
+   "stack": "pos"
+  },
+  {
+   "name": "85 0300",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850300",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 000000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "85000000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 010000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "85010000",
+   "stack": "pos"
+  },
+  {
+   "name": "85 030000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "85030000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8504",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 0400",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850400",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8580",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 8000",
+   "steps": [
+    "10 03"
+   ],
+   "request": "858000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 8100",
+   "steps": [
+    "10 03"
+   ],
+   "request": "858100",
+   "stack": "none"
+  },
+  {
+   "name": "10 sub 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1000",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1001",
+   "stack": "pos"
+  },
+  {
+   "name": "10 sub 02",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1002",
+   "stack": "pos"
+  },
+  {
+   "name": "10 sub 03",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1003",
+   "stack": "pos"
+  },
+  {
+   "name": "10 sub 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1004",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 05",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1005",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 06",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1006",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 07",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1007",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 08",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1008",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 09",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1009",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 0A",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100A",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 0B",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100B",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 0C",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100C",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 0D",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100D",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 0E",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100E",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 0F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "100F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 10",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1010",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 7F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "107F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1080",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 sub 81",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1081",
+   "stack": "none"
+  },
+  {
+   "name": "10 sub 82",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1082",
+   "stack": "none"
+  },
+  {
+   "name": "10 sub 83",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1083",
+   "stack": "none"
+  },
+  {
+   "name": "11 sub 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1100",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1101",
+   "stack": "pos"
+  },
+  {
+   "name": "11 sub 02",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1102",
+   "stack": "pos"
+  },
+  {
+   "name": "11 sub 03",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1103",
+   "stack": "pos"
+  },
+  {
+   "name": "11 sub 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1104",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 05",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1105",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 06",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1106",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 07",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1107",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 08",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1108",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 09",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1109",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 0A",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110A",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 0B",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110B",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 0C",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110C",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 0D",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110D",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 0E",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110E",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 0F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "110F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 10",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1110",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 7F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "117F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1180",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "11 sub 81",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1181",
+   "stack": "none"
+  },
+  {
+   "name": "11 sub 82",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1182",
+   "stack": "none"
+  },
+  {
+   "name": "11 sub 83",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1183",
+   "stack": "none"
+  },
+  {
+   "name": "28 sub 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280001",
+   "stack": "pos"
+  },
+  {
+   "name": "28 sub 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280101",
+   "stack": "pos"
+  },
+  {
+   "name": "28 sub 02",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280201",
+   "stack": "pos"
+  },
+  {
+   "name": "28 sub 03",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280301",
+   "stack": "pos"
+  },
+  {
+   "name": "28 sub 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280401",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 05",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280501",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 06",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280601",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 07",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280701",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 08",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280801",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 09",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280901",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 0A",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280A01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 0B",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280B01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 0C",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280C01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 0D",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280D01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 0E",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280E01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 0F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "280F01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 10",
+   "steps": [
+    "10 03"
+   ],
+   "request": "281001",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 7F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "287F01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "28 sub 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "288001",
+   "stack": "none"
+  },
+  {
+   "name": "28 sub 81",
+   "steps": [
+    "10 03"
+   ],
+   "request": "288101",
+   "stack": "none"
+  },
+  {
+   "name": "28 sub 82",
+   "steps": [
+    "10 03"
+   ],
+   "request": "288201",
+   "stack": "none"
+  },
+  {
+   "name": "28 sub 83",
+   "steps": [
+    "10 03"
+   ],
+   "request": "288301",
+   "stack": "none"
+  },
+  {
+   "name": "3E sub 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E00",
+   "stack": "pos"
+  },
+  {
+   "name": "3E sub 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E01",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 02",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E02",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 03",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E03",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E04",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 05",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E05",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 06",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E06",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 07",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E07",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 08",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E08",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 09",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E09",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 0A",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0A",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 0B",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0B",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 0C",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0C",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 0D",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0D",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 0E",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0E",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 0F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E0F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 10",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E10",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 7F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E7F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E80",
+   "stack": "none"
+  },
+  {
+   "name": "3E sub 81",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E81",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 82",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E82",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "3E sub 83",
+   "steps": [
+    "10 03"
+   ],
+   "request": "3E83",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8500",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8501",
+   "stack": "pos"
+  },
+  {
+   "name": "85 sub 02",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8502",
+   "stack": "pos"
+  },
+  {
+   "name": "85 sub 03",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8503",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8504",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 05",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8505",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 06",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8506",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 07",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8507",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 08",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8508",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 09",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8509",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 0A",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850A",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 0B",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850B",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 0C",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850C",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 0D",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850D",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 0E",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850E",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 0F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "850F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 10",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8510",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 7F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "857F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8580",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "85 sub 81",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8581",
+   "stack": "none"
+  },
+  {
+   "name": "85 sub 82",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8582",
+   "stack": "none"
+  },
+  {
+   "name": "85 sub 83",
+   "steps": [
+    "10 03"
+   ],
+   "request": "8583",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 sub 00",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1900FF",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 sub 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1901FF",
+   "stack": "pos"
+  },
+  {
+   "name": "19 sub 02",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1902FF",
+   "stack": "pos"
+  },
+  {
+   "name": "19 sub 03",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1903FF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1904FF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 05",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1905FF",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 sub 06",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1906FF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 07",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1907FF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 08",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1908FF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 09",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1909FF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 0A",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190AFF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 0B",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190BFF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 0C",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190CFF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 0D",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190DFF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 0E",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190EFF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "19 sub 0F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "190FFF",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 sub 10",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1910FF",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 sub 7F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "197FFF",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 sub 80",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1980FF",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "19 sub 81",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1981FF",
+   "stack": "none"
+  },
+  {
+   "name": "19 sub 82",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1982FF",
+   "stack": "none"
+  },
+  {
+   "name": "19 sub 83",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1983FF",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "27 seed 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2701",
+   "stack": "pos"
+  },
+  {
+   "name": "27 seed 03",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2703",
+   "stack": "pos"
+  },
+  {
+   "name": "27 seed 05",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2705",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "27 seed 07",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2707",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "27 seed 09",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2709",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "27 seed 0B",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270B",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "27 seed 0D",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270D",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "27 seed 0F",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270F",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "27 seed 41",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2741",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "27 seed 42",
+   "steps": [
+    "10 03"
+   ],
+   "request": "2742",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "10 01 then 10 01",
+   "steps": [],
+   "request": "1001",
+   "stack": "pos"
+  },
+  {
+   "name": "10 01 then 10 02",
+   "steps": [],
+   "request": "1002",
+   "stack": "pos"
+  },
+  {
+   "name": "10 01 then 10 03",
+   "steps": [],
+   "request": "1003",
+   "stack": "pos"
+  },
+  {
+   "name": "10 01 then 10 04",
+   "steps": [],
+   "request": "1004",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "10 02 then 10 01",
+   "steps": [
+    "10 02"
+   ],
+   "request": "1001",
+   "stack": "pos"
+  },
+  {
+   "name": "10 02 then 10 02",
+   "steps": [
+    "10 02"
+   ],
+   "request": "1002",
+   "stack": "pos"
+  },
+  {
+   "name": "10 02 then 10 03",
+   "steps": [
+    "10 02"
+   ],
+   "request": "1003",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "10 03 then 10 01",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1001",
+   "stack": "pos"
+  },
+  {
+   "name": "10 03 then 10 02",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1002",
+   "stack": "pos"
+  },
+  {
+   "name": "10 03 then 10 03",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1003",
+   "stack": "pos"
+  },
+  {
+   "name": "10 03 then 10 04",
+   "steps": [
+    "10 03"
+   ],
+   "request": "1004",
+   "stack": "NRC:12"
+  },
+  {
+   "name": "27 key without seed",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270200000000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "27 key level 2 without seed",
+   "steps": [
+    "10 03"
+   ],
+   "request": "270400000000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "27 key after seed, wrong",
+   "steps": [
+    "10 03",
+    "27 01"
+   ],
+   "request": "270200000000",
+   "stack": "NRC:35"
+  },
+  {
+   "name": "27 key for other level after seed",
+   "steps": [
+    "10 03",
+    "27 01"
+   ],
+   "request": "270400000000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "27 key twice, wrong",
+   "steps": [
+    "10 03",
+    "27 01",
+    "27 02 00000000"
+   ],
+   "request": "270200000000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "27 seed again when unlocked",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2701",
+   "stack": "pos"
+  },
+  {
+   "name": "27 seed level 2 when level 1 unlocked",
+   "steps": [
+    "10 03",
+    "UNLOCK"
+   ],
+   "request": "2703",
+   "stack": "pos"
+  },
+  {
+   "name": "27 level 2 unlocked, write",
+   "steps": [
+    "10 03",
+    "UNLOCK2"
+   ],
+   "request": "2EF18C01020304",
+   "stack": "NRC:33"
+  },
+  {
+   "name": "27 both levels, write",
+   "steps": [
+    "10 03",
+    "UNLOCK2",
+    "UNLOCK"
+   ],
+   "request": "2EF18C01020304",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "27 seed, session change, key",
+   "steps": [
+    "10 03",
+    "27 01",
+    "10 03"
+   ],
+   "request": "270200000000",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "22 two known DIDs",
+   "steps": [
+    "10 03"
+   ],
+   "request": "22F190F18C",
+   "stack": "pos"
+  },
+  {
+   "name": "22 known and unknown DID",
+   "steps": [
+    "10 03"
+   ],
+   "request": "22F1901234",
+   "stack": "pos"
+  },
+  {
+   "name": "22 unknown DID",
+   "steps": [
+    "10 03"
+   ],
+   "request": "221234",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "22 odd length",
+   "steps": [
+    "10 03"
+   ],
+   "request": "22F19000",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "22 extra byte",
+   "steps": [
+    "10 03"
+   ],
+   "request": "22F190F1",
+   "stack": "NRC:13"
+  },
+  {
+   "name": "36 without 34",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3601AA",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 without 34",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "37",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "34 download",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3400440802000000000010",
+   "stack": "pos"
+  },
+  {
+   "name": "36 01 after 34",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010"
+   ],
+   "request": "3601AA",
+   "stack": "pos"
+  },
+  {
+   "name": "36 02 after 34 (skips 01)",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010"
+   ],
+   "request": "3602AA",
+   "stack": "NRC:73"
+  },
+  {
+   "name": "36 01 twice",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AA"
+   ],
+   "request": "3601AA",
+   "stack": "pos"
+  },
+  {
+   "name": "36 02 after 01",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AA"
+   ],
+   "request": "3602AA",
+   "stack": "pos"
+  },
+  {
+   "name": "37 after 34",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010"
+   ],
+   "request": "37",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 after 34 + 36",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AA"
+   ],
+   "request": "37",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "37 twice",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AA",
+    "37"
+   ],
+   "request": "37",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 after 37",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AA",
+    "37"
+   ],
+   "request": "3601AA",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "34 twice",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010"
+   ],
+   "request": "3400440802000000000010",
+   "stack": "NRC:22"
+  },
+  {
+   "name": "36 full block",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010"
+   ],
+   "request": "3601AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "stack": "pos"
+  },
+  {
+   "name": "36 more than announced",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010"
+   ],
+   "request": "3601AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "stack": "NRC:71"
+  },
+  {
+   "name": "37 after full transfer",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+   ],
+   "request": "37",
+   "stack": "pos"
+  },
+  {
+   "name": "37 twice after full transfer",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "37"
+   ],
+   "request": "37",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 after full transfer",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+   ],
+   "request": "3602AA",
+   "stack": "NRC:24"
+  },
+  {
+   "name": "36 in two blocks",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AAAAAAAAAAAAAAAA"
+   ],
+   "request": "3602AAAAAAAAAAAAAAAA",
+   "stack": "pos"
+  },
+  {
+   "name": "37 after two blocks",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "3601AAAAAAAAAAAAAAAA",
+    "3602AAAAAAAAAAAAAAAA"
+   ],
+   "request": "37",
+   "stack": "pos"
+  },
+  {
+   "name": "36 sequence wraps",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000200",
+    "3601AAAA",
+    "3602AAAA",
+    "3603AAAA",
+    "3604AAAA",
+    "3605AAAA",
+    "3606AAAA",
+    "3607AAAA",
+    "3608AAAA",
+    "3609AAAA",
+    "360AAAAA",
+    "360BAAAA",
+    "360CAAAA",
+    "360DAAAA",
+    "360EAAAA",
+    "360FAAAA",
+    "3610AAAA",
+    "3611AAAA",
+    "3612AAAA",
+    "3613AAAA",
+    "3614AAAA",
+    "3615AAAA",
+    "3616AAAA",
+    "3617AAAA",
+    "3618AAAA",
+    "3619AAAA",
+    "361AAAAA",
+    "361BAAAA",
+    "361CAAAA",
+    "361DAAAA",
+    "361EAAAA",
+    "361FAAAA",
+    "3620AAAA",
+    "3621AAAA",
+    "3622AAAA",
+    "3623AAAA",
+    "3624AAAA",
+    "3625AAAA",
+    "3626AAAA",
+    "3627AAAA",
+    "3628AAAA",
+    "3629AAAA",
+    "362AAAAA",
+    "362BAAAA",
+    "362CAAAA",
+    "362DAAAA",
+    "362EAAAA",
+    "362FAAAA",
+    "3630AAAA",
+    "3631AAAA",
+    "3632AAAA",
+    "3633AAAA",
+    "3634AAAA",
+    "3635AAAA",
+    "3636AAAA",
+    "3637AAAA",
+    "3638AAAA",
+    "3639AAAA",
+    "363AAAAA",
+    "363BAAAA",
+    "363CAAAA",
+    "363DAAAA",
+    "363EAAAA",
+    "363FAAAA",
+    "3640AAAA",
+    "3641AAAA",
+    "3642AAAA",
+    "3643AAAA",
+    "3644AAAA",
+    "3645AAAA",
+    "3646AAAA",
+    "3647AAAA",
+    "3648AAAA",
+    "3649AAAA",
+    "364AAAAA",
+    "364BAAAA",
+    "364CAAAA",
+    "364DAAAA",
+    "364EAAAA",
+    "364FAAAA",
+    "3650AAAA",
+    "3651AAAA",
+    "3652AAAA",
+    "3653AAAA",
+    "3654AAAA",
+    "3655AAAA",
+    "3656AAAA",
+    "3657AAAA",
+    "3658AAAA",
+    "3659AAAA",
+    "365AAAAA",
+    "365BAAAA",
+    "365CAAAA",
+    "365DAAAA",
+    "365EAAAA",
+    "365FAAAA",
+    "3660AAAA",
+    "3661AAAA",
+    "3662AAAA",
+    "3663AAAA",
+    "3664AAAA",
+    "3665AAAA",
+    "3666AAAA",
+    "3667AAAA",
+    "3668AAAA",
+    "3669AAAA",
+    "366AAAAA",
+    "366BAAAA",
+    "366CAAAA",
+    "366DAAAA",
+    "366EAAAA",
+    "366FAAAA",
+    "3670AAAA",
+    "3671AAAA",
+    "3672AAAA",
+    "3673AAAA",
+    "3674AAAA",
+    "3675AAAA",
+    "3676AAAA",
+    "3677AAAA",
+    "3678AAAA",
+    "3679AAAA",
+    "367AAAAA",
+    "367BAAAA",
+    "367CAAAA",
+    "367DAAAA",
+    "367EAAAA",
+    "367FAAAA",
+    "3680AAAA",
+    "3681AAAA",
+    "3682AAAA",
+    "3683AAAA",
+    "3684AAAA",
+    "3685AAAA",
+    "3686AAAA",
+    "3687AAAA",
+    "3688AAAA",
+    "3689AAAA",
+    "368AAAAA",
+    "368BAAAA",
+    "368CAAAA",
+    "368DAAAA",
+    "368EAAAA",
+    "368FAAAA",
+    "3690AAAA",
+    "3691AAAA",
+    "3692AAAA",
+    "3693AAAA",
+    "3694AAAA",
+    "3695AAAA",
+    "3696AAAA",
+    "3697AAAA",
+    "3698AAAA",
+    "3699AAAA",
+    "369AAAAA",
+    "369BAAAA",
+    "369CAAAA",
+    "369DAAAA",
+    "369EAAAA",
+    "369FAAAA",
+    "36A0AAAA",
+    "36A1AAAA",
+    "36A2AAAA",
+    "36A3AAAA",
+    "36A4AAAA",
+    "36A5AAAA",
+    "36A6AAAA",
+    "36A7AAAA",
+    "36A8AAAA",
+    "36A9AAAA",
+    "36AAAAAA",
+    "36ABAAAA",
+    "36ACAAAA",
+    "36ADAAAA",
+    "36AEAAAA",
+    "36AFAAAA",
+    "36B0AAAA",
+    "36B1AAAA",
+    "36B2AAAA",
+    "36B3AAAA",
+    "36B4AAAA",
+    "36B5AAAA",
+    "36B6AAAA",
+    "36B7AAAA",
+    "36B8AAAA",
+    "36B9AAAA",
+    "36BAAAAA",
+    "36BBAAAA",
+    "36BCAAAA",
+    "36BDAAAA",
+    "36BEAAAA",
+    "36BFAAAA",
+    "36C0AAAA",
+    "36C1AAAA",
+    "36C2AAAA",
+    "36C3AAAA",
+    "36C4AAAA",
+    "36C5AAAA",
+    "36C6AAAA",
+    "36C7AAAA",
+    "36C8AAAA",
+    "36C9AAAA",
+    "36CAAAAA",
+    "36CBAAAA",
+    "36CCAAAA",
+    "36CDAAAA",
+    "36CEAAAA",
+    "36CFAAAA",
+    "36D0AAAA",
+    "36D1AAAA",
+    "36D2AAAA",
+    "36D3AAAA",
+    "36D4AAAA",
+    "36D5AAAA",
+    "36D6AAAA",
+    "36D7AAAA",
+    "36D8AAAA",
+    "36D9AAAA",
+    "36DAAAAA",
+    "36DBAAAA",
+    "36DCAAAA",
+    "36DDAAAA",
+    "36DEAAAA",
+    "36DFAAAA",
+    "36E0AAAA",
+    "36E1AAAA",
+    "36E2AAAA",
+    "36E3AAAA",
+    "36E4AAAA",
+    "36E5AAAA",
+    "36E6AAAA",
+    "36E7AAAA",
+    "36E8AAAA",
+    "36E9AAAA",
+    "36EAAAAA",
+    "36EBAAAA",
+    "36ECAAAA",
+    "36EDAAAA",
+    "36EEAAAA",
+    "36EFAAAA",
+    "36F0AAAA",
+    "36F1AAAA",
+    "36F2AAAA",
+    "36F3AAAA",
+    "36F4AAAA",
+    "36F5AAAA",
+    "36F6AAAA",
+    "36F7AAAA",
+    "36F8AAAA",
+    "36F9AAAA",
+    "36FAAAAA",
+    "36FBAAAA",
+    "36FCAAAA",
+    "36FDAAAA",
+    "36FEAAAA",
+    "36FFAAAA"
+   ],
+   "request": "3600AA",
+   "stack": "pos"
+  },
+  {
+   "name": "34 size zero",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3400440802000000000000",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "34 outside memory",
+   "steps": [
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3400440000000000000010",
+   "stack": "NRC:31"
+  },
+  {
+   "name": "36 after session change",
+   "steps": [
+    "10 02",
+    "UNLOCK",
+    "3400440802000000000010",
+    "10 02",
+    "UNLOCK"
+   ],
+   "request": "3601AA",
+   "stack": "NRC:24"
+  }
+ ]
+}

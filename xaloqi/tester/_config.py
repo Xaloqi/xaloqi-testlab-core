@@ -61,6 +61,7 @@ class TesterConfig:
     rx_id:         int          = 0x7E8
     tx_id:         int          = 0x7DF
     p2_timeout_ms: int          = 150
+    p2_star_timeout_ms: int     = 5000
     ecu_name:      str          = ""
     dids:          List[DidDef] = field(default_factory=list)
     dtcs:          List[DtcDef] = field(default_factory=list)
@@ -241,6 +242,7 @@ def load_eds_config(path: Union[str, Path]) -> TesterConfig:
         rx_id=ecu_tx_id,
         tx_id=ecu_rx_id,
         p2_timeout_ms=int(timing.get("p2_server_max_ms", 150)),
+        p2_star_timeout_ms=int(timing.get("p2_star_server_max_ms", 5000)),
         ecu_name=str(meta.get("ecu_name", "")),
         dids=[_parse_did(d, i) for i, d in enumerate(raw.get("dids") or [])],
         dtcs=[_parse_dtc(d, i) for i, d in enumerate(raw.get("dtcs") or [])],
@@ -262,6 +264,8 @@ def load_testlab_config(path: Union[str, Path]) -> TesterConfig:
     Optional (defaults shown):
         ecu_name        ""   Name shown in campaign output and HTML reports
         p2_timeout_ms   150  Response timeout in milliseconds
+        p2_star_timeout_ms 5000  ECU's P2*server_max: wait after an NRC 0x78
+                             (the tester adds a 500 ms margin)
         dids            []   DID definitions — enables multi-DID reads and reports
         dtcs            []   DTC definitions — adds names to fault records in reports
 
@@ -289,11 +293,20 @@ def load_testlab_config(path: Union[str, Path]) -> TesterConfig:
     if p2 <= 0:
         raise ConfigError(f"'p2_timeout_ms' must be > 0, got {p2}")
 
+    p2_star = raw.get("p2_star_timeout_ms", 5000)
+    try:
+        p2_star = int(p2_star)
+    except (ValueError, TypeError):
+        raise ConfigError(f"'p2_star_timeout_ms' must be an integer, got {p2_star!r}")
+    if p2_star <= 0:
+        raise ConfigError(f"'p2_star_timeout_ms' must be > 0, got {p2_star}")
+
     return TesterConfig(
         interface=str(raw.get("interface", "vcan0")),
         rx_id=rx_id,
         tx_id=tx_id,
         p2_timeout_ms=p2,
+        p2_star_timeout_ms=p2_star,
         ecu_name=str(raw.get("ecu_name", "")),
         dids=[_parse_did(d, i) for i, d in enumerate(raw.get("dids") or [])],
         dtcs=[_parse_dtc(d, i) for i, d in enumerate(raw.get("dtcs") or [])],

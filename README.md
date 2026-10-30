@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.9)](https://pypi.org/project/xaloqi-tester/)
+[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.10)](https://pypi.org/project/xaloqi-tester/)
 
 **Free, open-source Python UDS (ISO 14229) client, ECU simulator, and
 campaign runner.** No hardware. No CAN interface. No commercial diagnostic
@@ -79,6 +79,44 @@ testlab analyze --results reports/run.json
 DID/memory read-write, DTC handling, firmware transfer, expected NRCs,
 variable capture/interpolation — as data, not code. `--virtual` runs them
 against the built-in simulator.
+
+## What the simulated ECU does, and where it differs
+
+`--virtual` answers like an [EDS](https://github.com/Xaloqi/EDS) ECU for the
+rules a campaign most often checks. A service that is refused on the ECU is
+refused here, with the same NRC:
+
+- **Session and SecurityAccess gates** of every service in EDS's default
+  access table (for example `0x2E` needs an extended or programming session
+  *and* an unlocked level 1: `7F 2E 7F` / `7F 2E 33`). Unlocking level 2 does not
+  unlock level 1; every session change relocks.
+- **Session transitions**, request length (`0x13`), sub-function (`0x12`) and
+  the suppress-positive-response bit.
+- **Sequences**: a key without a seed (`0x24`), `0x36`/`0x37` without `0x34`,
+  block counters (`0x73`), a second `0x34` (`0x22`).
+
+These answers are checked against the compiled EDS stack in this project's
+tests, so they cannot drift silently.
+
+Differences you should know about:
+
+- **DIDs and routines are the simulator's own** unless you give it your ECU's
+  config: `testlab-run --virtual --sim-from-config --config diagnostics_config.yaml`
+  (or `xaloqi-sim --config diagnostics_config.yaml`). Then unknown or read-only
+  DIDs, a session that is too low, a missing SecurityAccess level, a wrong data
+  length and routine sub-functions are refused as the stack refuses them. Without
+  it the simulator has four built-in DIDs, writes any DID, and every routine answers.
+- **The SecurityAccess seed is fixed** (`47 AB 09 BB`), so a campaign that replays
+  a recorded key stays deterministic. An EDS ECU sends a fresh seed each time (and
+  an all-zero seed when the level is already unlocked, which the simulator also
+  does). A check for seed freshness or key replay needs the real ECU. There is no
+  attempt counter or lockout delay either.
+- **Session `0x04` (safety)** is off, as on an EDS ECU that has not enabled it.
+- **No periodic data**: `0x2A` can stop, but the simulator has no periodic DIDs, so
+  a start request is `0x31`. `0x2F` answers `0x31` for the same reason (no
+  IO-controllable DID).
+- **Memory services** (`0x23`, `0x3D`, `0x35`) use a 4 KiB region at `0x08020000`;
+  `0x34` takes any address, because the memory map is your ECU's.
 
 ## What's in core (Apache-2.0)
 

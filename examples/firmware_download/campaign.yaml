@@ -11,15 +11,12 @@ jobs:
       - action: security_access
         level: 1
 
-      - action: request_download
-        memory_address: "0x00000000"
-        memory_size: "0x00000010"
-
+      # One step runs the whole sequence: 0x34, every 0x36 block, 0x37. A
+      # separate request_download before it, or request_transfer_exit after it,
+      # is refused by an EDS ECU (0x22, 0x24), and now by the simulator.
       - action: transfer_data
         file: examples/firmware_download/firmware.bin
         memory_address: "0x00000000"
-
-      - action: request_transfer_exit
 
       - action: session
         value: default

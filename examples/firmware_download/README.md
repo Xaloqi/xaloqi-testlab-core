@@ -38,12 +38,10 @@ testlab analyze --results reports/firmware-download.json
 ```
 
 ```text
-[01/06] session(programming)       → OK
-[02/06] security_access(level=1)   → OK
-[03/06] request_download           → OK
-[04/06] transfer_data              → OK
-[05/06] request_transfer_exit      → OK
-[06/06] session(default)           → OK
+[01/04] session(programming)       → OK
+[02/04] security_access(level=1)   → OK
+[03/04] transfer_data              → OK
+[04/04] session(default)           → OK
 
 Result:  PASS
 ```
@@ -64,15 +62,10 @@ jobs:
       - action: security_access
         level: 1
 
-      - action: request_download
-        memory_address: "0x00000000"
-        memory_size: "0x00000010"
-
+      # One step runs the whole sequence: 0x34, every 0x36 block, 0x37.
       - action: transfer_data
         file: examples/firmware_download/firmware.bin
         memory_address: "0x00000000"
-
-      - action: request_transfer_exit
 
       - action: session
         value: default
@@ -82,7 +75,11 @@ Note the `transfer_data` step takes a **`file:` path**, not inline bytes —
 `testlab-run` reads the file and handles ISO-TP block chunking internally
 (block size from `safeboot.max_block_length` in `testlab_config.yaml`, or
 a default). One `transfer_data` step covers the whole payload regardless
-of how many `0x36` PDUs it takes on the wire.
+of how many `0x36` PDUs it takes on the wire. It also sends the `0x34`
+RequestDownload before the blocks and the `0x37` RequestTransferExit after
+them, so a campaign does not add `request_download` / `request_transfer_exit`
+steps around it: an EDS ECU answers the second `0x34` with `0x22` and the
+extra `0x37` with `0x24`, and so does the simulator.
 
 [`firmware.bin`](firmware.bin) bundled here is a **16-byte synthetic
 placeholder** (`00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF`) — enough

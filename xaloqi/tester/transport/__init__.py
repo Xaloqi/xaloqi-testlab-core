@@ -6,8 +6,6 @@ v1.4.x API compatibility."""
 from .base import CanBus
 from .virtual import VirtualBus
 
-__all__ = ["CanBus", "VirtualBus", "SocketCanBus", "HardwareBus", "PcanBus", "KvaserBus"]
-
 _PRO_EXPORTS = {
     "SocketCanBus": "transport.socketcan:SocketCanBus",
     "HardwareBus":  "transport.hardware:HardwareBus",
@@ -16,11 +14,11 @@ _PRO_EXPORTS = {
     "DoipBus":      "transport.doip:DoipBus",
 }
 
+_FREE_EXPORTS = ("CanBus", "VirtualBus")
 
-def __getattr__(name: str):
-    target = _PRO_EXPORTS.get(name)
-    if target is None:
-        raise AttributeError(f"module 'xaloqi.tester.transport' has no attribute '{name}'")
+
+def _resolve(name: str):
+    target = _PRO_EXPORTS[name]
     mod_path, _, attr = target.partition(":")
     try:
         import importlib
@@ -32,3 +30,26 @@ def __getattr__(name: str):
             f"Install the xaloqi-tester-pro wheel from your TestLab ZIP to enable it."
         ) from exc
     return getattr(mod, attr)
+
+
+def _available_exports() -> list:
+    """Free names plus the Pro names whose import succeeds. Computed on access
+    (module __getattr__), never at import: core must not import Pro at load, and
+    `import *` then works on a free install (TestLab#99) and includes DoipBus
+    etc. with Pro (xaloqi-testlab-core#13)."""
+    names = list(_FREE_EXPORTS)
+    for name in _PRO_EXPORTS:
+        try:
+            _resolve(name)
+        except ImportError:
+            continue
+        names.append(name)
+    return names
+
+
+def __getattr__(name: str):
+    if name == "__all__":
+        return _available_exports()
+    if name not in _PRO_EXPORTS:
+        raise AttributeError(f"module 'xaloqi.tester.transport' has no attribute '{name}'")
+    return _resolve(name)

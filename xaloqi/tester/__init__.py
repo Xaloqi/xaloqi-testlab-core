@@ -23,12 +23,12 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import (
-    Callable, Dict, List, Optional, Tuple, Union
+    Awaitable, Callable, Dict, List, Optional, Tuple, Union
 )
 
 from .exceptions import (
     UdsError, NrcError, TimeoutError, TransportError, ConfigError, LicenseError,
-    SovdError, FlowControlOverflowError,
+    SovdError, FlowControlOverflowError, ResponsePendingTimeoutError,
 )
 from ._isotp import IsoTpEngine, decode_st_min, _WFT_MAX, _N_BS_TIMEOUT
 from ._security import derive_key
@@ -45,12 +45,12 @@ __all__ = [
     # Enumerations
     "Session", "ResetType", "RoutineControl", "DtcStatusMask", "CommControlType",
     # Response types
-    "UdsResponse", "DidResponse", "MemoryResponse", "DtcRecord", "DtcResponse",
+    "UdsResponse", "ResponsePending", "DidResponse", "MemoryResponse", "DtcRecord", "DtcResponse",
     "FaultDetectionCounterRecord", "FaultDetectionCounterResponse",
     "SecuritySeedResponse", "RoutineResponse",
     # Exceptions
     "UdsError", "NrcError", "TimeoutError", "TransportError", "ConfigError", "LicenseError",
-    "SovdError", "FlowControlOverflowError",
+    "SovdError", "FlowControlOverflowError", "ResponsePendingTimeoutError",
     # SOVD (pro, lazy re-export)
     "SovdTester",
     # Config
@@ -136,11 +136,38 @@ class CommControlType(enum.IntEnum):
 # Response types
 # ---------------------------------------------------------------------------
 
+# NRC 0x78 requestCorrectlyReceived-ResponsePending (ISO 14229-1).
+_NRC_RESPONSE_PENDING = 0x78
+
+# ΔP2 added to the ECU's P2*server_max to get P2*client (ISO 14229-2).
+_P2_STAR_MARGIN_MS = 500
+
+
+@dataclass(frozen=True)
+class ResponsePending:
+    """
+    The responsePending (NRC 0x78) phase of one exchange.
+
+    count:    how many ``7F <SID> 78`` frames preceded the final response.
+    gaps_ms:  empty when count is 0. Otherwise count + 1 intervals: request
+              sent -> first 0x78, each 0x78 -> the next, last 0x78 -> final
+              response. Each interval after the first must stay under the
+              ECU's P2*server_max.
+    """
+    count: int = 0
+    gaps_ms: Tuple[float, ...] = ()
+
+
 @dataclass
 class UdsResponse:
-    """Base response. All service responses inherit from this."""
+    """Base response. All service responses inherit from this.
+
+    latency_ms runs from the request to the final response, so it includes
+    any responsePending phase; ``pending`` describes that phase.
+    """
     raw: bytes
     latency_ms: float
+    pending: ResponsePending = field(default_factory=ResponsePending, kw_only=True)
 
 
 @dataclass
@@ -231,6 +258,7 @@ _NRC_NAMES = {
     0x70: "uploadDownloadNotAccepted",
     0x72: "generalProgrammingFailure",
     0x73: "wrongBlockSequenceCounter",
+    0x78: "requestCorrectlyReceivedResponsePending",
     0x7E: "subFunctionNotSupportedInActiveSession",
     0x7F: "serviceNotSupportedInActiveSession",
 }
@@ -253,6 +281,13 @@ class UdsTester:
         keepalive:  If True, send TesterPresent every 2s in background.
         p2_timeout: ISO-TP P2 server max timeout override. Default: 0.15s.
         verbose:    If True, log every CAN frame to stderr.
+        p2_star_timeout: P2*client in seconds: how long to wait for the next
+                    frame after an NRC 0x78 (responsePending). Default 5.5 s,
+                    the ISO 14229-2 default P2*server_max of 5000 ms plus a
+                    500 ms margin.
+        max_pending: Cap in seconds on one request's whole exchange once the
+                    ECU has answered 0x78. Past it, ResponsePendingTimeoutError.
+                    Default 120 s.
     """
 
     def __init__(
@@ -264,7 +299,13 @@ class UdsTester:
         keepalive: bool = True,
         p2_timeout: float = 0.15,
         verbose: bool = False,
+        p2_star_timeout: float = 5.5,
+        max_pending: float = 120.0,
     ) -> None:
+        if p2_star_timeout <= 0:
+            raise ValueError(f"p2_star_timeout must be > 0, got {p2_star_timeout}")
+        if max_pending <= 0:
+            raise ValueError(f"max_pending must be > 0, got {max_pending}")
         self._interface = interface
         self._rx_id = rx_id
         self._tx_id = tx_id
@@ -272,6 +313,8 @@ class UdsTester:
         self._keepalive = keepalive
         self._p2_timeout = p2_timeout
         self._verbose = verbose
+        self._p2_star_timeout = p2_star_timeout
+        self._max_pending = max_pending
 
         self._bus: Optional[CanBus] = None
         self._isotp = IsoTpEngine()
@@ -285,6 +328,7 @@ class UdsTester:
         # precisely during the long transfers (TransferData) this fix targets.
         self._request_lock = asyncio.Lock()
         self._last_latency_ms: float = 0.0
+        self._last_pending: ResponsePending = ResponsePending()
 
         # DID config for multi-DID parsing (populated by from_config)
         self._did_defs: Dict[int, "DidDef"] = {}  # type: ignore[name-defined]
@@ -304,6 +348,10 @@ class UdsTester:
             rx_id=kwargs.pop("rx_id", config.rx_id),
             tx_id=kwargs.pop("tx_id", config.tx_id),
             p2_timeout=kwargs.pop("p2_timeout", config.p2_timeout_ms / 1000.0),
+            p2_star_timeout=kwargs.pop(
+                "p2_star_timeout",
+                (config.p2_star_timeout_ms + _P2_STAR_MARGIN_MS) / 1000.0,
+            ),
             **kwargs,
         )
         # Store DID definitions for multi-DID parsing
@@ -393,18 +441,25 @@ class UdsTester:
         2. Send CAN frames (handling multi-frame FC handshake)
         3. Receive response frames (handling multi-frame assembly)
         4. Decode response via IsoTpEngine
-        5. If response[0] == 0x7F: raise NrcError
-        6. Return response bytes (positive response)
+        5. On 7F <SID> 78 (responsePending): wait up to P2*client for the
+           next frame and repeat, at most max_pending in total
+        6. If response[0] == 0x7F: raise NrcError
+        7. Return response bytes (positive response)
         """
         if self._bus is None:
             raise TransportError("UdsTester not open — use 'async with UdsTester(...) as ecu'")
 
         t_start = time.monotonic()
         effective_timeout = timeout if timeout is not None else self._timeout
+        self._last_pending = ResponsePending()
 
         # Message-oriented transports (DoIP) carry whole UDS PDUs — no ISO-TP.
         if getattr(self._bus, "is_message_transport", False):
-            return await self._request_message(pdu, effective_timeout, t_start)
+            sid = pdu[0]
+            self._log("TX", self._tx_id, pdu)
+            await self._bus.send(self._tx_id, pdu)
+            return await self._await_final_response(
+                sid, effective_timeout, t_start, self._recv_message_pdu)
 
         # TX. encode() validates the payload first, so an empty PDU still
         # raises TransportError here rather than an IndexError on pdu[0].
@@ -443,13 +498,74 @@ class UdsTester:
                     st = decode_st_min(st_raw)
                     sent_in_block = 0
 
-        # RX — collect frames
+        return await self._await_final_response(
+            sid, effective_timeout, t_start, self._recv_isotp_pdu)
+
+    async def _await_final_response(
+        self,
+        sid: int,
+        timeout: float,
+        t_start: float,
+        recv_pdu: Callable[[int, float, float], Awaitable[bytes]],
+    ) -> bytes:
+        """
+        Receive response PDUs until one is final, absorbing responsePending.
+
+        ``7F <sid> 78`` is an interim answer (ISO 14229-1; P2*client per
+        ISO 14229-2): the next frame is awaited for up to p2_star_timeout,
+        and the whole exchange is capped at max_pending. A 0x78 naming a
+        different SID is not an answer to this request; it is skipped and
+        the current deadline still applies. Records the phase in
+        ``self._last_pending``.
+        """
+        pending_count = 0
+        gaps_ms: List[float] = []
+        t_prev = t_start
+        cap_deadline = t_start + self._max_pending
+        frame_timeout = timeout
+        deadline = time.monotonic() + timeout
+
+        while True:
+            try:
+                response = await recv_pdu(sid, deadline, frame_timeout)
+            except TimeoutError:
+                if pending_count and deadline >= cap_deadline:
+                    raise ResponsePendingTimeoutError(
+                        sid=sid, pending_count=pending_count,
+                        elapsed=time.monotonic() - t_start,
+                        cap=self._max_pending,
+                    ) from None
+                raise
+            now = time.monotonic()
+
+            if (len(response) >= 3 and response[0] == 0x7F
+                    and response[2] == _NRC_RESPONSE_PENDING):
+                if response[1] != sid:
+                    continue
+                pending_count += 1
+                gaps_ms.append((now - t_prev) * 1000.0)
+                t_prev = now
+                if now >= cap_deadline:
+                    raise ResponsePendingTimeoutError(
+                        sid=sid, pending_count=pending_count,
+                        elapsed=now - t_start, cap=self._max_pending,
+                    )
+                frame_timeout = self._p2_star_timeout
+                deadline = min(now + frame_timeout, cap_deadline)
+                continue
+
+            if pending_count:
+                gaps_ms.append((now - t_prev) * 1000.0)
+            self._last_pending = ResponsePending(pending_count, tuple(gaps_ms))
+            self._last_latency_ms = (now - t_start) * 1000.0
+            return self._check_nrc(response, sid)
+
+    async def _recv_isotp_pdu(self, sid: int, deadline: float, timeout: float) -> bytes:
+        """Reassemble one ISO-TP response PDU, or raise TimeoutError at deadline."""
         rx_frames: List[bytes] = []
         total_len: Optional[int] = None
         received: int = 0
         expected_sn: int = 1
-
-        deadline = time.monotonic() + effective_timeout
 
         while time.monotonic() < deadline:
             remaining = deadline - time.monotonic()
@@ -469,9 +585,7 @@ class UdsTester:
             pci_type = (frame_data[0] >> 4) & 0x0F
 
             if pci_type == 0x0:  # Single Frame
-                self._last_latency_ms = (time.monotonic() - t_start) * 1000.0
-                response = self._isotp.decode([frame_data])
-                return self._check_nrc(response, sid)
+                return self._isotp.decode([frame_data])
 
             elif pci_type == 0x1:  # First Frame
                 total_len = ((frame_data[0] & 0x0F) << 8) | frame_data[1]
@@ -483,7 +597,7 @@ class UdsTester:
                 self._log("TX-FC", self._tx_id, fc_cts)
                 await self._bus.send(self._tx_id, fc_cts)
                 # Extend deadline for multi-frame reception
-                deadline = time.monotonic() + effective_timeout
+                deadline = time.monotonic() + timeout
 
             elif pci_type == 0x2:  # Consecutive Frame
                 if total_len is None:
@@ -498,11 +612,9 @@ class UdsTester:
                 cf_bytes = min(7, total_len - received)
                 received += cf_bytes
                 if received >= total_len:
-                    self._last_latency_ms = (time.monotonic() - t_start) * 1000.0
-                    response = self._isotp.decode(rx_frames)
-                    return self._check_nrc(response, sid)
+                    return self._isotp.decode(rx_frames)
 
-        raise TimeoutError(sid=sid, timeout=effective_timeout)
+        raise TimeoutError(sid=sid, timeout=timeout)
 
     async def _await_flow_control(self, sid: int, timeout: float) -> Tuple[int, int]:
         """
@@ -563,20 +675,15 @@ class UdsTester:
 
         raise TimeoutError(sid=sid, timeout=timeout)
 
-    async def _request_message(self, pdu: bytes, timeout: float, t_start: float) -> bytes:
+    async def _recv_message_pdu(self, sid: int, deadline: float, timeout: float) -> bytes:
         """
-        Request/response over a message-oriented transport (is_message_transport).
+        Receive one response PDU over a message-oriented transport
+        (is_message_transport).
 
         The transport (e.g. DoIP over TCP) carries whole UDS PDUs of any length,
-        so there is no ISO-TP framing, flow control, or reassembly: send the raw
-        PDU, return the first raw response from our rx_id.
+        so there is no ISO-TP framing, flow control, or reassembly: return the
+        next raw response from our rx_id.
         """
-        sid = pdu[0]
-
-        self._log("TX", self._tx_id, pdu)
-        await self._bus.send(self._tx_id, pdu)
-
-        deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             remaining = deadline - time.monotonic()
             result = await self._bus.recv(timeout=max(0.001, remaining))
@@ -588,8 +695,7 @@ class UdsTester:
                 continue
 
             self._log("RX", frame_id, response)
-            self._last_latency_ms = (time.monotonic() - t_start) * 1000.0
-            return self._check_nrc(response, sid)
+            return response
 
         raise TimeoutError(sid=sid, timeout=timeout)
 
@@ -617,13 +723,13 @@ class UdsTester:
         """0x10 DiagnosticSessionControl."""
         pdu = bytes([0x10, int(session)])
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def reset(self, reset_type: ResetType = ResetType.SOFT) -> UdsResponse:
         """0x11 ECUReset."""
         pdu = bytes([0x11, int(reset_type)])
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     # ── Security ─────────────────────────────────────────────────────────────
 
@@ -653,7 +759,7 @@ class UdsTester:
         seed = resp[2:]
         return SecuritySeedResponse(
             raw=resp,
-            latency_ms=self._last_latency_ms,
+            latency_ms=self._last_latency_ms, pending=self._last_pending,
             level=level,
             seed=seed,
         )
@@ -664,7 +770,7 @@ class UdsTester:
         resp = await self._request(pdu)
         if resp[0] != 0x67:
             raise TransportError(f"SecurityAccess key response: expected 0x67, got 0x{resp[0]:02X}")
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     # ── Data ─────────────────────────────────────────────────────────────────
 
@@ -679,7 +785,7 @@ class UdsTester:
             raise TransportError(f"ReadDID echo mismatch: expected 0x{did_id:04X}, got 0x{echo_id:04X}")
         return DidResponse(
             raw=resp,
-            latency_ms=self._last_latency_ms,
+            latency_ms=self._last_latency_ms, pending=self._last_pending,
             did_id=did_id,
             data=resp[3:],
         )
@@ -714,7 +820,7 @@ class UdsTester:
 
             results[did_id] = DidResponse(
                 raw=resp,
-                latency_ms=self._last_latency_ms,
+                latency_ms=self._last_latency_ms, pending=self._last_pending,
                 did_id=did_id,
                 data=data,
             )
@@ -725,7 +831,7 @@ class UdsTester:
         """0x2E WriteDataByIdentifier."""
         pdu = bytes([0x2E, (did_id >> 8) & 0xFF, did_id & 0xFF]) + data
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def read_memory_by_address(
         self,
@@ -761,7 +867,7 @@ class UdsTester:
             )
         return MemoryResponse(
             raw=resp,
-            latency_ms=self._last_latency_ms,
+            latency_ms=self._last_latency_ms, pending=self._last_pending,
             address=address,
             data=resp[1:],
         )
@@ -799,7 +905,7 @@ class UdsTester:
             raise TransportError(
                 f"WriteMemoryByAddress response: expected 0x7D, got 0x{resp[0]:02X}"
             )
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     # ── DTCs ─────────────────────────────────────────────────────────────────
 
@@ -822,13 +928,13 @@ class UdsTester:
             offset += 4
             dtcs.append(DtcRecord(code=code, status_mask=status, description=""))
 
-        return DtcResponse(raw=resp, latency_ms=self._last_latency_ms, dtcs=dtcs)
+        return DtcResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending, dtcs=dtcs)
 
     async def clear_dtcs(self, group: int = 0xFFFFFF) -> UdsResponse:
         """0x14 ClearDiagnosticInformation."""
         pdu = bytes([0x14, (group >> 16) & 0xFF, (group >> 8) & 0xFF, group & 0xFF])
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def read_dtcs_fault_counter(self) -> FaultDetectionCounterResponse:
         """0x19/0x0B reportDTCFaultDetectionCounter — ISO 14229-1 §11.3.11.
@@ -849,7 +955,7 @@ class UdsTester:
             counter = resp[offset + 3]
             offset += 4
             records.append(FaultDetectionCounterRecord(code=code, counter=counter))
-        return FaultDetectionCounterResponse(raw=resp, latency_ms=self._last_latency_ms, records=records)
+        return FaultDetectionCounterResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending, records=records)
 
     async def read_dtcs_permanent(self) -> DtcResponse:
         """0x19/0x19 reportDTCWithPermanentStatus — ISO 14229-1 §11.3.25.
@@ -869,7 +975,7 @@ class UdsTester:
             status = resp[offset + 3]
             offset += 4
             dtcs.append(DtcRecord(code=code, status_mask=status, description=""))
-        return DtcResponse(raw=resp, latency_ms=self._last_latency_ms, dtcs=dtcs)
+        return DtcResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending, dtcs=dtcs)
 
     # ── Routines ─────────────────────────────────────────────────────────────
 
@@ -891,7 +997,7 @@ class UdsTester:
             raise TransportError(f"RoutineControl response: expected 0x71, got 0x{resp[0]:02X}")
         return RoutineResponse(
             raw=resp,
-            latency_ms=self._last_latency_ms,
+            latency_ms=self._last_latency_ms, pending=self._last_pending,
             routine_id=routine_id,
             control_type=int(control_type),
             status_record=resp[4:] if len(resp) > 4 else b"",
@@ -907,7 +1013,7 @@ class UdsTester:
         """0x28 CommunicationControl."""
         pdu = bytes([0x28, int(control_type), comm_type])
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def tester_present(self, suppress_response: bool = False) -> UdsResponse:
         """0x3E TesterPresent."""
@@ -929,13 +1035,13 @@ class UdsTester:
                         await self._bus.send(self._tx_id, f)
             return UdsResponse(raw=b"", latency_ms=0.0)
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def dtc_settings(self, setting_type: int) -> UdsResponse:
         """0x85 ControlDTCSetting. setting_type: 0x01=on, 0x02=off."""
         pdu = bytes([0x85, setting_type])
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     # ── Firmware update ───────────────────────────────────────────────────────
 
@@ -956,7 +1062,7 @@ class UdsTester:
         pdu += memory_address.to_bytes(addr_len, "big")
         pdu += memory_size.to_bytes(size_len, "big")
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def request_upload(
         self,
@@ -982,7 +1088,7 @@ class UdsTester:
         resp = await self._request(pdu)
         if resp and resp[0] != 0x75:
             raise TransportError(f"RequestUpload response: expected 0x75, got 0x{resp[0]:02X}")
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def transfer_data(
         self,
@@ -992,12 +1098,12 @@ class UdsTester:
         """0x36 TransferData — single block."""
         pdu = bytes([0x36, block_sequence & 0xFF]) + data
         resp = await self._request(pdu)
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def transfer_exit(self) -> UdsResponse:
         """0x37 RequestTransferExit."""
         resp = await self._request(bytes([0x37]))
-        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms)
+        return UdsResponse(raw=resp, latency_ms=self._last_latency_ms, pending=self._last_pending)
 
     async def transfer_firmware(
         self,

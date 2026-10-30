@@ -113,7 +113,7 @@ except ImportError as _e:
 # Version
 # ---------------------------------------------------------------------------
 
-RUNNER_VERSION      = "1.5.9"
+RUNNER_VERSION      = "1.5.10"
 JSON_SCHEMA_VERSION = 1
 
 
@@ -1414,6 +1414,7 @@ async def run_campaign(
     someip_virtual: bool = False,
     someip_host_override: Optional[str] = None,
     shared_ecu_state: bool = False,
+    sim_from_config: bool = False,
 ) -> List[JobResult]:
     """Run one or more jobs and return all JobResults.
 
@@ -1421,18 +1422,23 @@ async def run_campaign(
     session/security/DTC state across jobs, like a real ECU that is not
     power-cycled between jobs. Default is a fresh EcuState per job so
     --all results are deterministic and independent of job order.
+
+    sim_from_config (virtual mode only): build the simulated ECU's DIDs and
+    routines from `config` (an EDS diagnostics_config.yaml) instead of the
+    built-in set, so per-DID and per-routine rules apply (TestLab#95).
     """
 
     if virtual:
         # In-process VirtualBus — no hardware needed. Primarily for CI.
-        from xaloqi.sim import EcuState, run_on_bus
+        from xaloqi.sim import EcuModel, EcuState, run_on_bus
 
+        model = EcuModel.from_config(config) if sim_from_config else None
         tester_bus, ecu_bus = VirtualBus.pair("campaign")
         # The simulated ECU's state lives in a one-slot box so it can be
         # replaced between jobs. Without isolation, security unlock and DTC
         # state bleed from one job into the next and --all results depend on
         # job order (validation report Bug 10).
-        state_box = {"state": EcuState()}
+        state_box = {"state": EcuState(model)}
         stop  = asyncio.Event()
         task  = asyncio.create_task(run_on_bus(ecu_bus, state_box, stop, tx_id, verbose))
 
@@ -1448,7 +1454,7 @@ async def run_campaign(
             ) as tester:
                 for i, job_name in enumerate(jobs_to_run):
                     if i > 0 and not shared_ecu_state:
-                        state_box["state"] = EcuState()
+                        state_box["state"] = EcuState(model)
                     executor = CampaignExecutor(
                         config, config_path, tester, verbose,
                         someip_virtual=someip_virtual,
@@ -1521,6 +1527,12 @@ def main() -> int:
                         help="SocketCAN interface (default: vcan0)")
     parser.add_argument("--virtual",  action="store_true",
                         help="Use in-process VirtualBus + ECU simulator (no hardware)")
+    parser.add_argument("--sim-from-config", action="store_true",
+                        help="With --virtual: build the simulated ECU's DIDs and routines "
+                             "from --config (an EDS diagnostics_config.yaml), so unknown or "
+                             "read-only DIDs, session and security rules per DID / routine, "
+                             "and routine sub-functions are refused as on the ECU. Default: "
+                             "the built-in DID set, every routine answers.")
     parser.add_argument("--timeout",  type=float, default=0.15,
                         help="UDS response timeout in seconds (default: 0.15)")
     parser.add_argument("--verbose",  action="store_true",
@@ -1579,6 +1591,15 @@ def main() -> int:
         config = diagnostics_cfg
 
     jobs = config.get("jobs", {})
+
+    if args.sim_from_config:
+        if not args.virtual:
+            print("ERROR: --sim-from-config needs --virtual", file=sys.stderr)
+            return 1
+        if not config.get("dids"):
+            print("ERROR: --sim-from-config needs a --config with a `dids:` list "
+                  "(an EDS diagnostics_config.yaml); this one has none.", file=sys.stderr)
+            return 1
 
     # -- list mode ------------------------------------------------------------
     if args.list:
@@ -1774,6 +1795,7 @@ def main() -> int:
             someip_virtual=args.someip_virtual,
             someip_host_override=args.someip_host,
             shared_ecu_state=args.shared_ecu_state,
+            sim_from_config=args.sim_from_config,
         ))
     except TransportError as exc:
         # e.g. a real-hardware run without xaloqi-tester-pro installed
