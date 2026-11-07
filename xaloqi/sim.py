@@ -700,7 +700,7 @@ async def run_demo(verbose: bool = False) -> int:
         print("  with the example bundled in this install (no download needed):\n")
         for line in _demo_next_command():
             print(f"    {line}")
-        print("\n  More campaigns and quickstart docs: https://xaloqi.com/testlab/docs\n")
+        print("\n  More campaigns and quickstart docs: https://github.com/Xaloqi/xaloqi-testlab-core#readme\n")
     return 0 if ok else 1
 
 
