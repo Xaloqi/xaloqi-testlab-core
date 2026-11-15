@@ -3,8 +3,8 @@
 ## Run UDS tests without an ECU.
 
 [![CI](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml)
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.11)](https://pypi.org/project/xaloqi-tester/)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/blob/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.12)](https://pypi.org/project/xaloqi-tester/)
 
 **Free, open-source Python UDS (ISO 14229) client, ECU simulator, and
 campaign runner.** No hardware. No CAN interface. No commercial diagnostic
@@ -30,7 +30,7 @@ xaloqi-sim --demo
 > generate production UDS implementations for Zephyr and FreeRTOS.
 > **Test diagnostics?** You're in the right place.
 
-![Xaloqi TestLab Core demo — pipx run --spec xaloqi-tester xaloqi-sim --demo, showing a real UDS conversation: VIN read, extended session, AES-CMAC SecurityAccess unlock, a security-gated DID read, and a DTC read, ending "All exchanges OK."](docs/assets/testlab-demo.gif)
+![Xaloqi TestLab Core demo — pipx run --spec xaloqi-tester xaloqi-sim --demo, showing a real UDS conversation: VIN read, extended session, AES-CMAC SecurityAccess unlock, a security-gated DID read, and a DTC read, ending "All exchanges OK."](https://raw.githubusercontent.com/Xaloqi/xaloqi-testlab-core/main/docs/assets/testlab-demo.gif)
 
 *Recorded from the actual published package — not a mockup. Command and
 output are real; only the reveal pacing of the (near-instantaneous) result
@@ -68,9 +68,13 @@ against real hardware unmodified once you add
 
 ## Run a full campaign against it
 
+The config and campaign it uses are bundled with the package, so this works
+right after `pip install xaloqi-tester`:
+
 ```bash
-testlab-run --config testlab_config.yaml \
-            --campaign campaigns/standalone_validation.yaml \
+EX=$(python3 -c "import os, xaloqi.examples; print(os.path.dirname(xaloqi.examples.__file__))")
+testlab-run --config "$EX/testlab_config.yaml" \
+            --campaign "$EX/campaigns/standalone_validation.yaml" \
             --job basic_validation --virtual --json reports/run.json
 testlab analyze --results reports/run.json
 ```
@@ -232,9 +236,11 @@ jobs:
           python-version: "3.12"
       - run: pip install xaloqi-tester
       - run: |
+          # The bundled example; point these at your own config and campaign.
+          EX=$(python3 -c "import os, xaloqi.examples; print(os.path.dirname(xaloqi.examples.__file__))")
           mkdir -p reports
-          testlab-run --config testlab_config.yaml \
-            --campaign campaigns/standalone_validation.yaml \
+          testlab-run --config "$EX/testlab_config.yaml" \
+            --campaign "$EX/campaigns/standalone_validation.yaml" \
             --job basic_validation --virtual --json reports/run.json
       - run: testlab analyze --results reports/run.json
 ```
@@ -248,12 +254,12 @@ allocated to the CI runner.
 
 | Recipe | What you'll prove | Hardware |
 |---|---|---|
-| [SecurityAccess](examples/security_access/) | Protected resources stay locked until UDS `0x27` unlock | None |
-| [GitHub Actions](examples/github_actions/) | Run UDS regression tests on every PR | None |
-| [Negative responses](examples/negative_responses/) | Assert the ECU *rejects* what it should, with the right NRC | None |
-| [DTCs](examples/dtcs/) | Read, clear and re-read Diagnostic Trouble Codes (`0x19` / `0x14`) | None |
-| [Firmware download](examples/firmware_download/) | Exercise the `0x34` → `0x36` → `0x37` programming flow | None |
-| [DoIP](examples/doip/) | Move the same UDS testing model to Automotive Ethernet | DoIP endpoint (Pro) for real-network testing |
+| [SecurityAccess](https://github.com/Xaloqi/xaloqi-testlab-core/tree/main/examples/security_access) | Protected resources stay locked until UDS `0x27` unlock | None |
+| [GitHub Actions](https://github.com/Xaloqi/xaloqi-testlab-core/tree/main/examples/github_actions) | Run UDS regression tests on every PR | None |
+| [Negative responses](https://github.com/Xaloqi/xaloqi-testlab-core/tree/main/examples/negative_responses) | Assert the ECU *rejects* what it should, with the right NRC | None |
+| [DTCs](https://github.com/Xaloqi/xaloqi-testlab-core/tree/main/examples/dtcs) | Read, clear and re-read Diagnostic Trouble Codes (`0x19` / `0x14`) | None |
+| [Firmware download](https://github.com/Xaloqi/xaloqi-testlab-core/tree/main/examples/firmware_download) | Exercise the `0x34` → `0x36` → `0x37` programming flow | None |
+| [DoIP](https://github.com/Xaloqi/xaloqi-testlab-core/tree/main/examples/doip) | Move the same UDS testing model to Automotive Ethernet | DoIP endpoint (Pro) for real-network testing |
 
 **Start here:** `pipx run --spec xaloqi-tester xaloqi-sim --demo`
 
@@ -262,7 +268,9 @@ before being committed — not just described.
 
 ## Try the examples
 
-The bundled config and campaigns are meant to be changed, not just run:
+The config and campaigns are meant to be changed, not just run. Clone this
+repository (`git clone https://github.com/Xaloqi/xaloqi-testlab-core`) and
+work from its root:
 
 ```text
 examples/diagnostics_config.yaml
@@ -372,14 +380,14 @@ learning ISO 14229 without buying hardware first.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). If you've built something with
+See [CONTRIBUTING.md](https://github.com/Xaloqi/xaloqi-testlab-core/blob/main/CONTRIBUTING.md). If you've built something with
 TestLab, opening a discussion or linking your project helps us understand
 which workflows deserve more attention. Found a security issue? See
-[SECURITY.md](SECURITY.md) — please don't open a public issue for it.
+[SECURITY.md](https://github.com/Xaloqi/xaloqi-testlab-core/blob/main/SECURITY.md) — please don't open a public issue for it.
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+Apache License 2.0 — see [LICENSE](https://github.com/Xaloqi/xaloqi-testlab-core/blob/main/LICENSE).
 
 ---
 

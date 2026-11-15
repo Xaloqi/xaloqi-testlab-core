@@ -26,6 +26,7 @@ from pathlib import Path
 
 import pytest
 
+import xaloqi.runner
 from xaloqi.runner import (
     ACTION_STEP_KEYS,
     COMMON_STEP_KEYS,
@@ -33,7 +34,9 @@ from xaloqi.runner import (
     validate_job_schema,
 )
 
-_RUNNER_SRC = Path(__file__).parent.parent / "xaloqi" / "runner.py"
+# The installed runner, not a path next to this file: CI runs these tests from
+# a scratch copy against the installed package (TestLab#113).
+_RUNNER_SRC = Path(xaloqi.runner.__file__)
 
 
 def _job(*steps: dict) -> dict:

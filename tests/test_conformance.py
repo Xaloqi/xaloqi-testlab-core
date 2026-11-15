@@ -251,10 +251,15 @@ async def test_doip_runner_mechanics_against_a_local_test_double():
 # `--online` re-verifies the pinned table against GitHub and must never be
 # able to fail a test run because a third party had an outage.
 
+# Repo tooling (core/scripts/ is not in the package): skipped where CI copies
+# tests/ into a scratch dir, runs in the in-place config (TestLab#113).
+@pytest.mark.skipif(
+    not (Path(__file__).resolve().parent.parent / "pyproject.toml").exists(),
+    reason="repo checkout only",
+)
 def test_upstream_attribution_matches_pinned_licences():
     import subprocess
     import sys
-    from pathlib import Path
 
     script = Path(__file__).parent.parent / "scripts" / "verify_upstream_attribution.py"
     assert script.is_file(), f"attribution guard missing at {script}"

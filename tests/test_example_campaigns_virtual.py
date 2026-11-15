@@ -14,11 +14,17 @@ from pathlib import Path
 import pytest
 import yaml
 
+import xaloqi.examples
+
 _CORE = Path(__file__).resolve().parent.parent
-_CONFIG = _CORE / "xaloqi" / "examples" / "testlab_config.yaml"
+# The bundled config and campaigns come from the installed package, so the
+# test also runs where CI copies tests/ + examples/ into a scratch dir to test
+# the installed package (TestLab#113).
+_PKG_EXAMPLES = Path(xaloqi.examples.__file__).parent
+_CONFIG = _PKG_EXAMPLES / "testlab_config.yaml"
 _CAMPAIGNS = sorted([*(_CORE / "campaigns").glob("*.yaml"),
                      *(_CORE / "examples").glob("*/campaign.yaml"),
-                     *(_CORE / "xaloqi" / "examples" / "campaigns").glob("*.yaml")])
+                     *(_PKG_EXAMPLES / "campaigns").glob("*.yaml")])
 _JOBS = [(c, j) for c in _CAMPAIGNS for j in yaml.safe_load(c.read_text())["jobs"]]
 
 

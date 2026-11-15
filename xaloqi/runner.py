@@ -113,7 +113,7 @@ except ImportError as _e:
 # Version
 # ---------------------------------------------------------------------------
 
-RUNNER_VERSION      = "1.5.11"
+RUNNER_VERSION      = "1.5.12"
 JSON_SCHEMA_VERSION = 1
 
 
@@ -1729,6 +1729,8 @@ def main() -> int:
                 verbose=args.verbose,
                 someip_virtual=args.someip_virtual,
                 someip_host_override=args.someip_host,
+                # Only when set, so a pro build that predates it still runs.
+                **({"virtual": True} if args.virtual else {}),
             ))
         except TransportError as exc:
             # Same shape as the single-ECU path below: a workspace ECU with
