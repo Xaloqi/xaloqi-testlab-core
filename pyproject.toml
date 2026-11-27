@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "xaloqi-tester"
-version = "1.5.12"
+version = "1.5.13"
 description = "Xaloqi TestLab core — UDS ECU validation campaign runner with a built-in simulated ECU. Apache-2.0."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -27,11 +27,17 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage      = "https://xaloqi.com"
+Homepage      = "https://xaloqi.com/testlab"
 Documentation = "https://github.com/Xaloqi/xaloqi-testlab-core#readme"
 Repository    = "https://github.com/Xaloqi/xaloqi-testlab-core"
 
 [project.optional-dependencies]
+# testlab-core#17: the conformance CLI's CAN suites (isotp, uds-sid) use the
+# python-can binding shipped in xaloqi.tester.conformance.python_can_bus.
+# python-can is LGPL-3.0-only, used as an ordinary dependency.
+can = [
+    "python-can>=4.0",
+]
 dev = [
     "pytest>=7.4",
     "pytest-asyncio>=0.23",

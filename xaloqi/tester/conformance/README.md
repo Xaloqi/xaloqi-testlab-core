@@ -20,10 +20,11 @@ send/recv) and `UdsTester` (complete-PDU request/response, over any
 depends on `xaloqi-tester-pro`'s real-hardware transports (SocketCAN, DoIP,
 PCAN/Kvaser). Implement `CanBus`'s two methods against whatever you already
 use to talk to your own stack — `python-can`, a raw socket, hardware you
-already have working — and every suite here runs against it. See
-`core/examples/conformance_bindings/can_frame_python_can.py` for a real,
-runnable one, using `python-can` (LGPL-3.0-only, as an ordinary
-dependency — not modified or redistributed) as a convenient
+already have working — and every suite here runs against it.
+`xaloqi/tester/conformance/python_can_bus.py` is a real, runnable one,
+shipped in the package and used by the CLI unless you pass
+`--bindings-dir`, using `python-can` (LGPL-3.0-only, an optional extra
+used as an ordinary dependency — not modified or redistributed) as a convenient
 already-independent transport. Not to be confused with
 `python-can-isotp`, a separate MIT-licensed project that uses `python-can`
 as its own dependency and is the actual project the ISO-TP vectors below
@@ -66,9 +67,10 @@ to the independent upstream project each vector's `upstream` field names.
 
 ## requires_fixture — read this before a vector "fails" against your target
 
-Several `uds_sid` and `isotp` vectors assert against a *specific* test DID
-(`0x0001`), routine (`0x0012`), or flow-control configuration
-(`block_size`/`stmin_ms`) that the original EDS C conformance test
+Several vectors assert against a *specific* test DID (`0x0001`), routine
+(`0x0012`), DTC (`0x123456`), flow-control configuration
+(`block_size`/`stmin_ms`), or DoIP logical addresses (entity `0x0001`,
+tester `0x0E00`) that the original EDS C conformance test
 registers as its own throwaway fixture — not a universal ISO requirement,
 and not present in most real targets' production configuration. Each such
 vector is tagged `"requires_fixture": true` with a `fixture_note` saying
@@ -78,19 +80,23 @@ fixture will correctly report a mismatch (often a legitimate
 correctly, not a defect, and not what the vector is measuring in that
 context.
 
-`core/examples/conformance_bindings/reference_uds_stub.py` registers exactly
+The CLI skips them unless you pass `--include-fixture-dependent` (every
+suite, DoIP included); the library's `run_*_suite()` functions run them
+unless you pass `include_fixture_dependent=False`.
+
+`examples/conformance_bindings/reference_uds_stub.py` (in a clone of this repository) registers exactly
 these fixtures in ~250 lines of plain Python sharing no code with EDS,
-specifically so every vector — including the four `requires_fixture` ones
-— has somewhere real to run and pass. `core/tests/test_conformance.py`
+specifically so every vector — including the five `requires_fixture` ones
+— has somewhere real to run and pass. `tests/test_conformance.py`
 runs the full 15-vector `uds_sid` suite against it.
 
 ## Suites
 
 | Suite | Primitive needed | Vectors | requires_fixture |
 |---|---|---|---|
-| `isotp` | `CanBus.send()`/`recv()` (raw frames) | 7 | 5 |
-| `uds_sid` | `UdsTester.raw_exchange()` (complete PDUs, any transport) | 15 | 4 |
-| `doip` | `DoipRawProbe` (this package's one new primitive — raw TCP bytes) | 5 | 0 |
+| `isotp` | `CanBus.send()`/`recv()` (raw frames) | 7 | 6 |
+| `uds_sid` | `UdsTester.raw_exchange()` (complete PDUs, any transport) | 15 | 5 |
+| `doip` | `DoipRawProbe` (this package's one new primitive — raw TCP bytes) | 5 | 5 |
 
 ## The one new transport primitive: `DoipRawProbe`
 
@@ -107,6 +113,10 @@ trying to be a smaller version of it.
 ## Running it
 
 ```bash
+# The CAN suites need python-can, an optional extra (the DoIP suite does not):
+pip install "xaloqi-tester[can]"        # from PyPI
+pip install -e ".[can]"                  # or from a clone of this repository
+
 # Against your own stack, however you reach it:
 python3 -m xaloqi.tester.conformance isotp --interface vcan0 --can-id 0x7E0
 python3 -m xaloqi.tester.conformance uds-sid --interface vcan0 --rx-id 0x7E8 --tx-id 0x7E0
@@ -116,6 +126,12 @@ python3 -m xaloqi.tester.conformance doip --host 192.0.2.10 --port 13400
 # -- reuses Xaloqi/EDS's own proven vxcan container pattern):
 bash scripts/dogfood_against_eds.sh /path/to/EDS/checkout
 ```
+
+The CAN suites use the python-can binding shipped in the package. To use
+your own transport, write `can_frame_python_can.py` defining `PythonCanBus`
+(a `CanBus`: `send()`, `recv()`, `close()`, constructed with `channel=`) in a
+directory of your own and add `--bindings-dir <that directory>`;
+`examples/conformance_bindings/can_frame_python_can.py` shows the contract.
 
 ## Verifying the corpus itself
 

@@ -15,7 +15,8 @@
         "copyright": "Copyright (c) 2020 Jacob Schaer"
       },
       "iso_clause": "ISO 13400-2:2019 §7.3",
-      "requires_fixture": false,
+      "requires_fixture": true,
+      "fixture_note": "Requires a DoIP entity with logical address 0x0001 (0x1234 for VEC-DIAG-ACK-002) that accepts tester address 0x0E00, the addresses the upstream python-doipclient test uses. Both are configuration (EDS: ecu.doip), so a correctly configured entity with other addresses answers different bytes (testlab-core#18).",
       "steps": [
         { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 00 00 00 00 00", "note": "src=0x0E00 (tester), activation_type=0x00 (Default)" },
         { "op": "expect", "data": "02 FD 00 06 00 00 00 09 0E 00 00 01 10 00 00 00 00", "note": "tester(0x0E00), entity(0x0001), resp code 0x10 (OK)" }
@@ -32,7 +33,8 @@
         "copyright": "Copyright (c) 2020 Jacob Schaer"
       },
       "iso_clause": "ISO 13400-2:2019 §7.3",
-      "requires_fixture": false,
+      "requires_fixture": true,
+      "fixture_note": "Requires a DoIP entity with logical address 0x0001 (0x1234 for VEC-DIAG-ACK-002) that accepts tester address 0x0E00, the addresses the upstream python-doipclient test uses. Both are configuration (EDS: ecu.doip), so a correctly configured entity with other addresses answers different bytes (testlab-core#18).",
       "steps": [
         { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 01 00 00 00 00", "note": "activation_type=0x01, the one EDS's own denial path implements" },
         { "op": "expect", "data": "02 FD 00 06 00 00 00 09 0E 00 00 01 00 00 00 00 00", "note": "resp code 0x00 DENIED" }
@@ -49,7 +51,8 @@
         "copyright": "Copyright (c) 2020 Jacob Schaer"
       },
       "iso_clause": "ISO 13400-2:2019 §7.8",
-      "requires_fixture": false,
+      "requires_fixture": true,
+      "fixture_note": "Requires a DoIP entity with logical address 0x0001 (0x1234 for VEC-DIAG-ACK-002) that accepts tester address 0x0E00, the addresses the upstream python-doipclient test uses. Both are configuration (EDS: ecu.doip), so a correctly configured entity with other addresses answers different bytes (testlab-core#18).",
       "steps": [
         { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 00 00 00 00 00", "note": "setup: routing activation (response not asserted here)" },
         { "op": "drain", "timeout_ms": 500, "note": "drain the routing-activation response before the diagnostic exchange -- not asserted" },
@@ -68,7 +71,8 @@
         "copyright": "Copyright (c) 2020 Jacob Schaer"
       },
       "iso_clause": "ISO 13400-2:2019 §7.8",
-      "requires_fixture": false,
+      "requires_fixture": true,
+      "fixture_note": "Requires a DoIP entity with logical address 0x0001 (0x1234 for VEC-DIAG-ACK-002) that accepts tester address 0x0E00, the addresses the upstream python-doipclient test uses. Both are configuration (EDS: ecu.doip), so a correctly configured entity with other addresses answers different bytes (testlab-core#18).",
       "steps": [
         { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 00 00 00 00 00", "note": "setup: routing activation against entity 0x1234 (response not asserted)" },
         { "op": "drain", "timeout_ms": 500, "note": "drain the routing-activation response -- not asserted" },
@@ -87,7 +91,8 @@
         "copyright": "Copyright (c) 2020 Jacob Schaer"
       },
       "iso_clause": "ISO 13400-2:2019 Table 28",
-      "requires_fixture": false,
+      "requires_fixture": true,
+      "fixture_note": "Requires a DoIP entity with logical address 0x0001 (0x1234 for VEC-DIAG-ACK-002) that accepts tester address 0x0E00, the addresses the upstream python-doipclient test uses. Both are configuration (EDS: ecu.doip), so a correctly configured entity with other addresses answers different bytes (testlab-core#18).",
       "steps": [
         { "op": "send", "data": "02 FD 00 05 00 00 00 07 0E 00 00 00 00 00 00", "note": "setup: routing activation (response not asserted)" },
         { "op": "drain", "timeout_ms": 500, "note": "drain the routing-activation response -- not asserted" },

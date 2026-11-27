@@ -342,9 +342,21 @@ async def run_doip_suite(
     suite: Suite,
     *,
     vector_ids: Optional[List[str]] = None,
+    include_fixture_dependent: bool = True,
 ) -> Report:
     report = Report(suite_name=suite.name)
     for v in _select(suite, vector_ids):
+        # [testlab-core#18] The DoIP vectors fix the entity and tester
+        # logical addresses, which are target configuration.
+        if v.requires_fixture and not include_fixture_dependent:
+            report.results.append(
+                VectorResult(
+                    v.id, v.name, passed=False, skipped=True,
+                    detail=f"requires_fixture: {v.fixture_note}",
+                    upstream_citation=_citation(v),
+                )
+            )
+            continue
         detail = ""
         passed = True
         try:

@@ -106,7 +106,6 @@ docker exec "$CONTAINER_NAME" bash -c '
 docker cp "$EDS_BINARY" "$CONTAINER_NAME:/eds-demo-eds.exe"
 docker exec "$CONTAINER_NAME" chmod +x /eds-demo-eds.exe
 docker cp "$PACKAGE_ROOT/xaloqi" "$CONTAINER_NAME:/usr/lib/python3/dist-packages/xaloqi"
-docker cp "$PACKAGE_ROOT/examples/conformance_bindings" "$CONTAINER_NAME:/bindings"
 
 docker exec "$CONTAINER_NAME" bash -c '
   set -e
@@ -123,14 +122,14 @@ echo
 echo "--- isotp suite (fixture-independent vectors only) ---"
 ISOTP_RC=0
 docker exec "$CONTAINER_NAME" python3 -m xaloqi.tester.conformance isotp \
-  --interface vxcan0 --can-id 0x7E0 --bindings-dir /bindings \
+  --interface vxcan0 --can-id 0x7E0 \
   || ISOTP_RC=$?
 
 echo
 echo "--- uds-sid suite (fixture-independent vectors only) ---"
 UDS_RC=0
 docker exec "$CONTAINER_NAME" python3 -m xaloqi.tester.conformance uds-sid \
-  --interface vxcan0 --rx-id 0x7E8 --tx-id 0x7E0 --bindings-dir /bindings \
+  --interface vxcan0 --rx-id 0x7E8 --tx-id 0x7E0 \
   || UDS_RC=$?
 
 echo

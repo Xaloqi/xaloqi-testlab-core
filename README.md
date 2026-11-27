@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Xaloqi/xaloqi-testlab-core/blob/main/LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.12)](https://pypi.org/project/xaloqi-tester/)
+[![PyPI](https://img.shields.io/pypi/v/xaloqi-tester.svg?cacheSeconds=3600&v=1.5.13)](https://pypi.org/project/xaloqi-tester/)
 
 **Free, open-source Python UDS (ISO 14229) client, ECU simulator, and
 campaign runner.** No hardware. No CAN interface. No commercial diagnostic
@@ -62,7 +62,7 @@ your test campaign (YAML)
 
 The same campaign YAML runs against the simulator locally and in CI, then
 against real hardware unmodified once you add
-[Xaloqi TestLab Pro](https://xaloqi.com).
+[Xaloqi TestLab Pro](https://xaloqi.com/testlab).
 
 ---
 
@@ -139,9 +139,11 @@ Differences you should know about:
 - **`testlab analyze`** — terminal summary of a run's JSON results.
 - **`xaloqi.tester.conformance`** — byte-exact ISO-TP/UDS-SID/DoIP
   conformance vectors, ported from the udsoncan/can-isotp/python-doipclient
-  test suites, plus a runner that judges `==` on bytes. Needs no real
-  transport: implement `CanBus`'s two methods against your own stack
-  (`python3 -m xaloqi.tester.conformance isotp --interface vcan0 ...`).
+  test suites, plus a runner that judges `==` on bytes. The CAN suites run
+  over SocketCAN with the python-can binding shipped in the package
+  (`pip install "xaloqi-tester[can]"`, then
+  `python3 -m xaloqi.tester.conformance isotp --interface vcan0 ...`), or over
+  your own stack: implement `CanBus`'s two methods and pass `--bindings-dir`.
   See `xaloqi/tester/conformance/README.md` for what a pass asserts and
   what it refuses to claim — it is a measuring stick, not a certification.
 
@@ -178,7 +180,7 @@ before any hardware does.
 |---|---|---|
 | **What it is** | UDS client library stack | Campaign runner + simulated ECU |
 | **Something that answers you** | **You supply it.** Testing without hardware is well supported — pluggable connections, `can-isotp` custom lower layer, `python-can` loopback, Linux `vcan`. What is not shipped is a stateful responder; `FakeConnection` replays a 2-entry static dict | Stateful simulator: sessions, SecurityAccess seed/key (AES-CMAC), DTCs, NRCs |
-| **Real CAN / DoIP hardware** | **Yes, free** — socketcan, J2534, and every python-can interface | **Not in core.** Core is virtual-transport only; real transports are [Pro](https://xaloqi.com) |
+| **Real CAN / DoIP hardware** | **Yes, free** — socketcan, J2534, and every python-can interface | **Not in core.** Core is virtual-transport only; real transports are [Pro](https://xaloqi.com/testlab) |
 | **Raw UDS service coverage** | **Broader** — 27 services, 91 client methods, incl. the full ReadDTCInformation subfunction set, 0x29 Authentication, DynamicallyDefineDataIdentifier | Focused on the ~20 actions a validation campaign uses |
 | **How you express a test** | Write Python | Declarative YAML campaign |
 | **Pass/fail + timing report** | Build it yourself | Built in (`testlab-run`, `testlab analyze`, JSON out) |
@@ -355,7 +357,7 @@ to test it? Stay here.
 Real transports (SocketCAN, PCAN/Kvaser, DoIP, SOME/IP), the SOVD client,
 multi-ECU workspace mode, RTOS comparison, HTML reports/trends/dashboard,
 and AI-assisted failure analysis are part of
-[Xaloqi TestLab Pro](https://xaloqi.com) — installed as an additional wheel
+[Xaloqi TestLab Pro](https://xaloqi.com/testlab) — installed as an additional wheel
 alongside this package. Core discovers Pro automatically through Python
 entry points: install Pro and every `testlab` command and campaign action
 above works unchanged, plus the paid ones. Without Pro installed, a paid
@@ -397,4 +399,4 @@ campaign, and make it test your ECU.
 
 **Build diagnostics:** [Xaloqi EDS](https://github.com/Xaloqi/EDS) ·
 **Test diagnostics:** Xaloqi TestLab Core ·
-**Commercial tooling:** [xaloqi.com](https://xaloqi.com)
+**Commercial tooling:** [xaloqi.com/testlab](https://xaloqi.com/testlab)

@@ -271,3 +271,32 @@ def test_upstream_attribution_matches_pinned_licences():
         "redistributed MIT vector is a licensing defect, not a typo:\n"
         f"{proc.stdout}\n{proc.stderr}"
     )
+
+
+async def test_doip_fixture_vectors_are_skipped_unless_asked():
+    """testlab-core#18: the DoIP vectors fix the entity/tester logical
+    addresses (target configuration), so without include_fixture_dependent
+    they are skipped and never touch the probe."""
+    class _NeverProbe:
+        async def send_bytes(self, data):
+            raise AssertionError("a skipped vector reached the probe")
+
+        async def recv_bytes(self, timeout_ms):
+            raise AssertionError("a skipped vector reached the probe")
+
+    suite = load_suite("doip")
+    report = await run_doip_suite(_NeverProbe(), suite, include_fixture_dependent=False)
+    assert len(report.results) == 5
+    assert all(r.skipped for r in report.results)
+    assert all("requires_fixture" in r.detail for r in report.results)
+
+
+def test_configuration_dependent_vectors_are_tagged():
+    """testlab-core#18: the vectors whose expected bytes are target
+    configuration (a registered DTC, the receiver's FC parameters, DoIP
+    logical addresses) carry requires_fixture."""
+    tagged = {v.id for name in ("uds_sid", "isotp", "doip")
+              for v in load_suite(name).vectors if v.requires_fixture}
+    for vid in ("VEC-SID-14-001", "VEC-RX-REAL-DEFAULT-001", "VEC-RA-001", "VEC-RA-002",
+                "VEC-DIAG-ACK-001", "VEC-DIAG-ACK-002", "VEC-ALIVE-001"):
+        assert vid in tagged, vid

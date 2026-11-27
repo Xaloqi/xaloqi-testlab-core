@@ -201,7 +201,7 @@
         "copyright": "Copyright (c) 2017 Pier-Yves Lessard"
       },
       "iso_clause": "ISO 14229-1 §12",
-      "requires_fixture": false,
+      "requires_fixture": true,
       "session": "extended",
       "steps": [
         {
@@ -212,7 +212,8 @@
           "op": "expect",
           "data": "54"
         }
-      ]
+      ],
+      "fixture_note": "Requires DTC 0x123456 (or a group containing it) registered on the target, as EDS's own C vector registers it first (testlab-core#18). A server without it answers 7F 14 31 (requestOutOfRange), which is correct, not a defect. Group FF FF FF needs no fixture."
     },
     {
       "id": "VEC-SID-3E-001",

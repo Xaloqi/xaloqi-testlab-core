@@ -46,8 +46,8 @@
       "description": "NOT an upstream-sourced vector -- added here because every shipped EDS example's real-world ISO-TP config is block_size=0, stmin_ms=0 (transport/isotp.h's ISOTP_DEFAULT_BLOCK_SIZE/STMIN_MS), which none of the upstream-ported RX-MF vectors above happen to test byte-exact (they use 5/2, 3/5, 0/5 to exercise different *shapes*). This checks the one FC byte pattern a real, unmodified, as-shipped EDS target actually produces: CTS, BS=0, STmin=0, exactly once, for the whole transfer, regardless of its length.",
       "upstream": null,
       "iso_clause": "ISO 15765-2:2016 §9.6.5",
-      "requires_fixture": false,
-      "fixture_note": "Not requires_fixture in the sense the other vectors in this file use it: block_size=0/stmin_ms=0 IS every shipped EDS example's real default, so this runs by default against an EDS target. It is still not a universal ISO 15765-2 requirement -- a different implementation's real default may differ, and this vector would legitimately fail there for that reason, not a defect.",
+      "requires_fixture": true,
+      "fixture_note": "Requires a receiver whose Flow Control is BS=0, STmin=0. That was every shipped EDS example's default until EDS#561 (v1.26.x) moved it to BS=16; BS and STmin are target configuration, as the scope_note says for MF-002/004/005 (testlab-core#18). A receiver configured otherwise answers its own FC, which is not a defect.",
       "steps": [
         { "op": "send", "data": "10 1E 00 01 02 03 04 05", "note": "First Frame, FF_DL=30, bytes 0-5" },
         { "op": "expect", "data": "30 00 00", "timeout_ms": 300, "note": "FC after FF: CTS, BS=0, STmin=0" },
@@ -115,7 +115,7 @@
       },
       "iso_clause": "ISO 15765-2:2016 §9.6.5",
       "requires_fixture": true,
-      "fixture_note": "Requires a target configured with block_size=0, stmin_ms=5. Every shipped EDS example has block_size=0 but stmin_ms=0, not 5 -- hence still fixture-dependent on the exact STmin byte; see VEC-RX-REAL-DEFAULT-001 for the as-shipped (0,0) check.",
+      "fixture_note": "Requires a target configured with block_size=0, stmin_ms=5. Shipped EDS examples use stmin_ms=0 (and block_size=16 since EDS#561), so this depends on the exact BS and STmin bytes; VEC-RX-REAL-DEFAULT-001 checks a (0,0) receiver.",
       "steps": [
         { "op": "send", "data": "10 1E 00 01 02 03 04 05", "note": "First Frame, FF_DL=30" },
         { "op": "expect", "data": "30 00 05", "timeout_ms": 300, "note": "FC: CTS, BS=0, STmin=5" },
